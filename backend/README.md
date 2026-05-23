@@ -1,0 +1,2 @@
+# GeoGuard-AI-Enhanced-Early-Disaster-Warning-and-Resource-Allocation-System-
+AI-powered early disaster prediction and risk mapping system using satellite imagery and machine learning. Combines CNN + LSTM models with open-source data to identify flood, landslide, and cyclone risk zones. Includes an interactive dashboard for visualizing risk levels and supporting early warning &amp; decision-making.
