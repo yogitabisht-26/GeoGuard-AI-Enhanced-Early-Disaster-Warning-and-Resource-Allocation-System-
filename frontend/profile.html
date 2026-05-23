@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>My Profile — GeoGuard AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#050a08;--card:#0a1410;--border:#162b1e;--border2:#1e3d2a;--text:#e8f5ee;--muted:#5a8068;--muted2:#3d5c4a;--green:#4ade80;--red:#f87171;--orange:#fb923c;--yellow:#fbbf24;--blue:#60a5fa;--sidebar:240px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex}
+.sidebar{width:var(--sidebar);background:var(--card);border-right:1px solid var(--border);position:fixed;top:0;left:0;height:100vh;z-index:100;display:flex;flex-direction:column;overflow-y:auto}
+.sb-logo{padding:20px 18px 16px;border-bottom:1px solid var(--border)}
+.sb-logo-row{display:flex;align-items:center;gap:10px;margin-bottom:3px}
+.sb-shield{width:34px;height:34px;border-radius:8px;background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.25);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.sb-app-name{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;color:var(--green)}
+.sb-ai-badge{font-size:9px;background:rgba(74,222,128,.15);color:var(--green);border:1px solid rgba(74,222,128,.25);padding:1px 5px;border-radius:3px;font-weight:700}
+.sb-tagline{font-size:10px;color:var(--muted);padding-left:44px}
+.sb-nav{padding:14px 10px;flex:1}
+.sb-section{font-size:10px;font-weight:600;color:var(--muted2);text-transform:uppercase;letter-spacing:.1em;padding:0 10px;margin:14px 0 6px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;margin-bottom:2px;color:var(--muted);font-size:13px;text-decoration:none;transition:all .15s}
+.sb-item:hover{background:rgba(74,222,128,.07);color:var(--green)}
+.sb-item.active{background:rgba(74,222,128,.12);color:var(--green);font-weight:500}
+.sb-item svg{width:16px;height:16px;flex-shrink:0}
+.sb-bottom{padding:12px;border-top:1px solid var(--border)}
+.sb-user{display:flex;align-items:center;gap:10px;padding:10px 8px;border-radius:10px;cursor:pointer;margin-bottom:8px}
+.sb-user:hover{background:rgba(255,255,255,.04)}
+.sb-av{width:34px;height:34px;border-radius:50%;background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.3);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--green);flex-shrink:0}
+.sb-uname{font-size:13px;font-weight:600;color:var(--text)}
+.sb-uemail{font-size:11px;color:var(--muted)}
+.main{margin-left:var(--sidebar);flex:1;min-height:100vh;display:flex;flex-direction:column}
+.topbar{background:var(--card);border-bottom:1px solid var(--border);height:60px;padding:0 22px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50}
+.tb-title{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700}
+.tb-right{margin-left:auto}
+.tb-clock{font-size:12px;color:var(--muted)}
+.page{padding:24px 26px 60px;flex:1}
+.hero{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.av-big{width:72px;height:72px;border-radius:50%;background:rgba(74,222,128,.15);border:2px solid rgba(74,222,128,.3);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:var(--green);font-family:'Space Grotesk',sans-serif;flex-shrink:0}
+.pname{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:800;margin-bottom:4px}
+.pemail{font-size:13px;color:var(--muted);margin-bottom:8px}
+.rbadge{display:inline-block;font-size:10px;font-weight:700;padding:2px 10px;border-radius:100px}
+.ru{background:rgba(74,222,128,.12);color:var(--green)}
+.rn{background:rgba(251,191,36,.12);color:var(--yellow)}
+.ra{background:rgba(96,165,250,.12);color:var(--blue)}
+.igrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:20px}
+.icard{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px}
+.ilabel{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
+.ivalue{font-size:15px;font-weight:600;color:var(--text)}
+.tabs{display:flex;gap:4px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:4px;width:fit-content;margin-bottom:20px;flex-wrap:wrap}
+.tbtn{background:none;border:none;padding:8px 14px;border-radius:9px;font-size:13px;cursor:pointer;color:var(--muted);transition:all .15s;font-family:'Inter',sans-serif}
+.tbtn.on{background:rgba(74,222,128,.12);color:var(--green);font-weight:600}
+.tc{display:none}
+.tc.on{display:block}
+.scard{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:16px}
+.stitle{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;margin-bottom:16px}
+.fg{margin-bottom:14px}
+.fl{font-size:11px;color:var(--muted);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.06em;font-weight:500}
+.fi{width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:11px 14px;font-size:14px;color:var(--text);font-family:'Inter',sans-serif;outline:none;transition:all .2s}
+.fi:focus{border-color:rgba(74,222,128,.4)}
+.fi::placeholder{color:var(--muted2)}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.bsave{background:var(--green);color:#000;border:none;border-radius:10px;padding:11px 24px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:all .2s}
+.bsave:hover{filter:brightness(1.1)}
+.bsave:disabled{opacity:.5;cursor:not-allowed}
+.bout{background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer;transition:all .2s}
+.bout:hover{border-color:rgba(74,222,128,.3);color:var(--green)}
+.mok{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--green);margin-top:12px;display:none}
+.merr{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--red);margin-top:12px;display:none}
+.lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-top:12px}
+.lcard{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:11px;padding:14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.lcard:hover{border-color:var(--border2)}
+.lname{font-size:13px;font-weight:500}
+.lmeta{font-size:11px;color:var(--muted);margin-top:3px}
+.xbtn{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.2);color:var(--red);cursor:pointer;border-radius:6px;width:28px;height:28px;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.xbtn:hover{background:rgba(248,113,113,.2)}
+.htable{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px}
+.htable th{text-align:left;padding:10px 14px;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border);font-weight:600}
+.htable td{padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--muted)}
+.htable tr:last-child td{border-bottom:none}
+.htable tr:hover td{background:rgba(255,255,255,.02)}
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 9px;border-radius:100px;letter-spacing:.04em}
+.badge-HIGH{background:rgba(248,113,113,.15);color:var(--red)}
+.badge-MEDIUM{background:rgba(251,146,60,.15);color:var(--orange)}
+.badge-LOW{background:rgba(251,191,36,.15);color:var(--yellow)}
+.badge-MINIMAL{background:rgba(74,222,128,.12);color:var(--green)}
+.trow{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.trow:last-child{border-bottom:none}
+.tlbl{font-size:13px;color:var(--text)}
+.tsub{font-size:11px;color:var(--muted);margin-top:2px}
+.tog{position:relative;width:44px;height:24px;flex-shrink:0}
+.tog input{opacity:0;width:0;height:0;position:absolute}
+.tsl{position:absolute;inset:0;background:var(--border2);border-radius:100px;cursor:pointer;transition:.2s}
+.tsl::before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:var(--muted);border-radius:50%;transition:.2s}
+.tog input:checked+.tsl{background:rgba(74,222,128,.3)}
+.tog input:checked+.tsl::before{transform:translateX(20px);background:var(--green)}
+.loading{text-align:center;padding:48px 20px}
+.spinner{width:34px;height:34px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:13px;color:var(--muted)}
+.empty{text-align:center;padding:28px;color:var(--muted);font-size:13px;line-height:1.6}
+@media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.frow{grid-template-columns:1fr}.page{padding:14px 14px 60px}}
+
+/* Light mode */
+body.light{--bg:#f0fdf4;--card:#ffffff;--border:#d1fae5;--border2:#a7f3d0;--text:#0f2d1a;--muted:#4b7a5c;--muted2:#6b9e7d;--green:#16a34a;--red:#dc2626;--orange:#d97706;--yellow:#b45309;--blue:#1d4ed8}
+body.light .sidebar,body.light .topbar{background:#ffffff;box-shadow:0 1px 8px rgba(0,0,0,.07)}
+body.light .sb-item.active{background:#dcfce7;color:#16a34a}
+body.light .sb-item:hover{background:#f0fdf4;color:#16a34a}
+body.light .form-input,.fi,body.light .search-input{background:#f9fafb;border-color:#d1fae5;color:#0f2d1a}
+body.light .form-input:focus,.fi:focus,body.light .search-input:focus{border-color:#16a34a}
+body.light .card,.scard,.chart-card,.icard,.lcard,.req-item,.ngo-card{background:#ffffff;border-color:#d1fae5}
+body.light .chip{background:#f9fafb;border-color:#d1fae5}
+body.light .chip:hover{background:#f0fdf4;border-color:#4ade80}
+body.light .btn-out,.bout{background:#f9fafb;border-color:#d1fae5;color:#4b7a5c}
+body.light .htable th{border-color:#d1fae5}
+body.light .htable td{border-color:rgba(0,0,0,.05)}
+body.light .htable tr:hover td{background:rgba(22,163,74,.03)}
+body.light .tabs,.tbtn{background:#ffffff;border-color:#d1fae5}
+body.light .tbtn.on{background:#dcfce7;color:#16a34a}
+body.light .tsl{background:#d1fae5}
+body.light .trow{border-color:rgba(0,0,0,.06)}
+
+/* Light mode visual tweaks */
+body.light input, body.light select, body.light textarea {
+  background: #f9fafb !important;
+  color: #064e3b !important;
+}
+body.light .sidebar { box-shadow: 2px 0 12px rgba(0,0,0,.08); }
+body.light .topbar  { box-shadow: 0 1px 8px rgba(0,0,0,.06); }
+body.light .d-card:hover, body.light .card:hover { border-color: #a7f3d0; }
+body.light table th { border-color: #d1fae5; }
+body.light table td { border-color: rgba(0,0,0,.06); }
+
+</style>
+<script src="theme.js"></script>
+</head>
+<body>
+<nav class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-row"><div class="sb-shield">🛡</div><span class="sb-app-name">GeoGuard</span><span class="sb-ai-badge">AI</span></div>
+    <div class="sb-tagline">Early Warning & Resource Allocation</div>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-section">Prediction</div>
+    <a class="sb-item" href="dashboard.html"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>Dashboard</a>
+    <a class="sb-item" href="map.html"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12 1.586l-4 4v12.828l4-4V1.586zM3.707 3.293A1 1 0 002 4v10a1 1 0 00.293.707L6 18.414V5.586L3.707 3.293zM17.707 5.293L14 1.586v12.828l2.293 2.293A1 1 0 0018 16V6a1 1 0 00-.293-.707z" clip-rule="evenodd"/></svg>Risk Map</a>
+    <a class="sb-item" href="history.html"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 16H15a2 2 0 002-2V5a1 1 0 100-2H3z" clip-rule="evenodd"/></svg>Historical Data</a>
+    <div class="sb-section">Resources</div>
+    <a class="sb-item" href="ngo.html"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/></svg>NGO Portal</a>
+    <a class="sb-item" href="resources.html"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5z" clip-rule="evenodd"/></svg>Resource Requests</a>
+    <div class="sb-section">Account</div>
+    <a class="sb-item active" href="profile.html"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg>My Profile</a>
+  </div>
+  <div class="sb-bottom">
+    <div class="sb-user" onclick="location.href='profile.html'">
+      <div class="sb-av" id="sb-initials">U</div>
+      <div><div class="sb-uname" id="sb-name">User</div><div class="sb-uemail" id="sb-email"></div></div>
+    </div>
+    <button class="bout" style="width:100%;font-size:12px;padding:8px" onclick="doLogout()">Sign Out</button>
+  </div>
+</nav>
+
+<div class="main">
+  <div class="topbar">
+    <div class="tb-title">My Profile</div>
+    <div class="tb-right"><button class="theme-toggle-btn" onclick="toggleTheme()" title="Switch to Light Mode" style="background:none;border:1px solid var(--border);border-radius:8px;padding:7px 10px;cursor:pointer;color:var(--muted);font-size:16px;line-height:1;transition:all .15s;flex-shrink:0">🌙</button>
+      <span class="tb-clock" id="tb-clock"></span></div>
+  </div>
+  <div class="page">
+    <div class="loading" id="div-loading"><div class="spinner"></div><div class="loading-text">Loading...</div></div>
+    <div id="div-content" style="display:none">
+      <div class="hero">
+        <div class="av-big" id="p-av">U</div>
+        <div style="flex:1">
+          <div class="pname" id="p-name">—</div>
+          <div class="pemail" id="p-email">—</div>
+          <span class="rbadge ru" id="p-role">User</span>
+        </div>
+        <div style="text-align:right"><div style="font-size:11px;color:var(--muted);margin-bottom:3px">Member since</div><div style="font-size:13px;font-weight:500" id="p-joined">—</div></div>
+      </div>
+      <div class="igrid">
+        <div class="icard"><div class="ilabel">Phone</div><div class="ivalue" id="p-phone">—</div></div>
+        <div class="icard"><div class="ilabel">City</div><div class="ivalue" id="p-city">—</div></div>
+        <div class="icard"><div class="ilabel">Saved Locations</div><div class="ivalue" id="p-sloc">0</div></div>
+        <div class="icard"><div class="ilabel">Predictions</div><div class="ivalue" id="p-pred">0</div></div>
+      </div>
+      <div class="tabs">
+        <button class="tbtn on" onclick="showTab('edit')">✏️ Edit Profile</button>
+        <button class="tbtn" onclick="showTab('locs')">📍 Saved Locations</button>
+        <button class="tbtn" onclick="showTab('hist')">📊 History</button>
+        <button class="tbtn" onclick="showTab('alrt')">🔔 Alert Settings</button>
+      </div>
+      <div class="tc on" id="tc-edit">
+        <div class="scard">
+          <div class="stitle">✏️ Edit Profile</div>
+          <div class="frow">
+            <div class="fg"><label class="fl">Full Name</label><input class="fi" id="e-name" placeholder="Your full name"></div>
+            <div class="fg"><label class="fl">City</label><input class="fi" id="e-city" placeholder="Your city"></div>
+          </div>
+          <div class="fg"><label class="fl">Phone Number</label><input class="fi" id="e-phone" type="tel" placeholder="+91 XXXXXXXXXX" style="max-width:300px"></div>
+          <button class="bsave" id="save-btn" onclick="saveProfile()">Save Changes</button>
+          <div class="mok" id="msg-ok"></div>
+          <div class="merr" id="msg-err"></div>
+        </div>
+      </div>
+      <div class="tc" id="tc-locs">
+        <div class="scard"><div class="stitle">📍 Saved Locations</div><div id="locs-content"><div class="empty">No saved locations.</div></div></div>
+      </div>
+      <div class="tc" id="tc-hist">
+        <div class="scard"><div class="stitle">📊 Prediction History</div><div id="hist-content"><div class="empty">No predictions yet.</div></div></div>
+      </div>
+      <div class="tc" id="tc-alrt">
+        <div class="scard">
+          <div class="stitle">🔔 Alert Settings</div>
+          <div class="trow"><div><div class="tlbl">SMS Alerts</div><div class="tsub">SMS when HIGH risk near you</div></div><label class="tog"><input type="checkbox" id="tog-sms" onchange="saveAlerts()"><span class="tsl"></span></label></div>
+          <div class="trow"><div><div class="tlbl">Browser Notifications</div><div class="tsub">Push notifications in browser</div></div><label class="tog"><input type="checkbox" id="tog-br" onchange="toggleBrowser()"><span class="tsl"></span></label></div>
+          <div class="trow"><div><div class="tlbl">Nearby Monitoring</div><div class="tsub">Check danger zones every 30 min</div></div><label class="tog"><input type="checkbox" id="tog-nb" checked><span class="tsl"></span></label></div>
+          <div class="mok" id="alrt-ok" style="margin-top:10px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var API='http://localhost:8000';
+function tok(){return localStorage.getItem('gg_token')||'';}
+function usr(){try{return JSON.parse(localStorage.getItem('gg_user'));}catch(e){return null;}}
+function doLogout(){localStorage.removeItem('gg_token');localStorage.removeItem('gg_user');location.href='index.html';}
+function T(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
+function S(id){var e=document.getElementById(id);if(e)e.style.display='block';}
+function H(id){var e=document.getElementById(id);if(e)e.style.display='none';}
+function fmtDate(d){if(!d)return '—';try{return new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});}catch(e){return '—';}}
+
+async function call(url,body,method){
+  var m=method||(body?'POST':'GET');
+  var h={'Content-Type':'application/json'};
+  var t=tok();if(t)h['Authorization']='Bearer '+t;
+  var opts={method:m,headers:h};
+  if(body)opts.body=JSON.stringify(body);
+  var res=await fetch(API+url,opts);
+  var data=await res.json();
+  if(!res.ok)throw new Error(data.detail||'Error '+res.status);
+  return data;
+}
+
+function showTab(name){
+  document.querySelectorAll('.tc').forEach(function(e){e.classList.remove('on');});
+  document.querySelectorAll('.tbtn').forEach(function(e){e.classList.remove('on');});
+  var c=document.getElementById('tc-'+name);if(c)c.classList.add('on');
+  document.querySelectorAll('.tbtn').forEach(function(btn){
+    if(btn.getAttribute('onclick')&&btn.getAttribute('onclick').includes("'"+name+"'")){btn.classList.add('on');}
+  });
+}
+
+window.addEventListener('DOMContentLoaded',function(){
+  if(!tok()||!usr()){location.href='index.html';return;}
+  var u=usr();
+  if(u){T('sb-name',u.name||'User');T('sb-email',u.email||'');T('sb-initials',(u.name||'U')[0].toUpperCase());}
+  setInterval(function(){var e=document.getElementById('tb-clock');if(e)e.textContent=new Date().toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'});},1000);
+  loadProfile();
+});
+
+async function loadProfile(){
+  S('div-loading');H('div-content');
+  try{
+    var data=await call('/user/profile',null,'GET');
+    var u=data.user;
+    T('p-av',(u.name||'U')[0].toUpperCase());
+    T('p-name',u.name||'—');
+    T('p-email',u.email||'—');
+    T('p-joined',fmtDate(u.created_at));
+    var roleMap={user:'Regular User',ngo:'NGO',admin:'Administrator'};
+    T('p-role',roleMap[u.role]||u.role||'User');
+    T('p-phone',u.phone||'Not added');
+    T('p-city',u.city||'Not added');
+    T('p-sloc',(data.saved_locations||[]).length);
+    T('p-pred',(data.prediction_history||[]).length);
+    document.getElementById('e-name').value=u.name||'';
+    document.getElementById('e-city').value=u.city||'';
+    document.getElementById('e-phone').value=u.phone||'';
+    document.getElementById('tog-sms').checked=u.sms_alerts!==0&&u.sms_alerts!==false;
+    document.getElementById('tog-br').checked=Notification.permission==='granted';
+    renderLocs(data.saved_locations||[]);
+    renderHist(data.prediction_history||[]);
+    H('div-loading');S('div-content');
+  }catch(e){
+    H('div-loading');
+    document.getElementById('div-content').innerHTML='<div style="background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);border-radius:10px;padding:16px;color:var(--red)">Error: '+e.message+'</div>';
+    S('div-content');
+  }
+}
+
+async function saveProfile(){
+  var payload={};
+  var name=document.getElementById('e-name').value.trim();
+  var city=document.getElementById('e-city').value.trim();
+  var phone=document.getElementById('e-phone').value.trim();
+  if(name)payload.name=name;
+  if(city)payload.city=city;
+  if(phone)payload.phone=phone;
+  if(!Object.keys(payload).length){showMsg('err','Fill at least one field.');return;}
+  var btn=document.getElementById('save-btn');
+  btn.disabled=true;btn.textContent='Saving...';
+  try{
+    var r=await call('/user/profile',payload,'PUT');
+    showMsg('ok','✅ '+(r.message||'Profile updated!'));
+    if(name){T('sb-name',name);T('sb-initials',name[0].toUpperCase());T('p-av',name[0].toUpperCase());T('p-name',name);var u=usr();if(u){u.name=name;localStorage.setItem('gg_user',JSON.stringify(u));}}
+    if(phone)T('p-phone',phone);
+    if(city)T('p-city',city);
+  }catch(e){showMsg('err','❌ '+e.message);}
+  btn.disabled=false;btn.textContent='Save Changes';
+}
+
+function showMsg(type,text){
+  var ok=document.getElementById('msg-ok'),err=document.getElementById('msg-err');
+  if(type==='ok'){ok.textContent=text;ok.style.display='block';err.style.display='none';}
+  else{err.textContent=text;err.style.display='block';ok.style.display='none';}
+  setTimeout(function(){ok.style.display='none';err.style.display='none';},5000);
+}
+
+function renderLocs(locs){
+  var c=document.getElementById('locs-content');if(!c)return;
+  if(!locs.length){c.innerHTML='<div class="empty">No saved locations yet.<br>Go to Dashboard → predict → click "+ Save"</div>';return;}
+  c.innerHTML='<div class="lgrid">'+locs.map(function(l){
+    return '<div class="lcard"><div><div class="lname">'+l.location_name+'</div><div class="lmeta">'+(l.lat?l.lat.toFixed(2)+'°N, '+l.lon.toFixed(2)+'°E':'No coords')+'</div><div class="lmeta">'+fmtDate(l.created_at)+'</div></div><div style="display:flex;flex-direction:column;gap:6px"><button class="bout" onclick="location.href=\'dashboard.html\'" style="font-size:11px">Predict</button><button class="xbtn" onclick="delLoc(\''+l._id+'\',\''+l.location_name+'\')">×</button></div></div>';
+  }).join('')+'</div>';
+}
+
+function renderHist(hist){
+  var c=document.getElementById('hist-content');if(!c)return;
+  if(!hist.length){c.innerHTML='<div class="empty">No predictions yet.</div>';return;}
+  var M=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  c.innerHTML='<table class="htable"><thead><tr><th>Location</th><th>Disaster</th><th>Month</th><th>Risk</th><th>Confidence</th><th>Date</th></tr></thead><tbody>'+
+    hist.map(function(h){return '<tr><td style="color:var(--text);font-weight:500">'+(h.location||'—')+'</td><td>'+(h.disaster||'—')+'</td><td>'+(M[h.month]||h.month||'—')+'</td><td><span class="badge badge-'+(h.risk_level||'MINIMAL')+'">'+(h.risk_level||'—')+'</span></td><td style="color:var(--green)">'+(h.confidence?parseFloat(h.confidence).toFixed(1)+'%':'—')+'</td><td>'+fmtDate(h.created_at)+'</td></tr>';}).join('')+
+  '</tbody></table>';
+}
+
+async function delLoc(id,name){
+  if(!confirm('Remove "'+name+'"?'))return;
+  try{await call('/user/saved-location/'+id,null,'DELETE');loadProfile();}
+  catch(e){alert('Error: '+e.message);}
+}
+
+async function saveAlerts(){
+  var sms=document.getElementById('tog-sms').checked;
+  try{
+    await call('/user/profile',{sms_alerts:sms?1:0},'PUT');
+    var el=document.getElementById('alrt-ok');
+    el.textContent='✅ Settings saved!';el.style.display='block';
+    setTimeout(function(){el.style.display='none';},3000);
+  }catch(e){console.log(e);}
+}
+
+async function toggleBrowser(){
+  if(document.getElementById('tog-br').checked){
+    var p=await Notification.requestPermission();
+    document.getElementById('tog-br').checked=p==='granted';
+  }
+}
+</script>
+</body>
+</html>

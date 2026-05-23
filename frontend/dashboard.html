@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard — GeoGuard AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="theme.js"></script>
+<style>
+:root{--bg:#050a08;--card:#0a1410;--card2:#0f1c16;--border:#162b1e;--border2:#1e3d2a;--text:#e8f5ee;--muted:#5a8068;--muted2:#3d5c4a;--green:#4ade80;--red:#f87171;--orange:#fb923c;--yellow:#fbbf24;--blue:#60a5fa;--sidebar:240px}
+/* Light mode */
+body.light{--bg:#f0fdf4;--card:#ffffff;--card2:#f9fafb;--border:#d1fae5;--border2:#a7f3d0;--text:#064e3b;--muted:#4b7a5c;--muted2:#6b9e7d;--green:#16a34a;--red:#dc2626;--orange:#d97706;--yellow:#b45309;--blue:#1d4ed8}
+body.light .sidebar{background:#fff;box-shadow:2px 0 12px rgba(0,0,0,.08)}
+body.light .topbar{background:#fff;box-shadow:0 1px 8px rgba(0,0,0,.06)}
+body.light .form-card,body.light .d-card,body.light .wx-card,body.light .chart-card,body.light .res-card{background:#fff;border-color:#d1fae5}
+body.light .form-input{background:#f9fafb;border-color:#d1fae5;color:#064e3b}
+body.light .form-input:focus{border-color:#16a34a}
+body.light .mb{background:#f9fafb;border-color:#d1fae5}
+body.light .mb.on{background:#dcfce7;border-color:#16a34a;color:#16a34a}
+body.light .dtab{background:#f9fafb;border-color:#d1fae5}
+body.light .dtab.on{background:#dcfce7;border-color:#16a34a;color:#16a34a}
+body.light .chip{background:#f9fafb;border-color:#d1fae5}
+body.light .chip:hover{background:#f0fdf4}
+body.light .btn-out{background:#f9fafb;border-color:#d1fae5;color:#4b7a5c}
+body.light .notif-btn{background:#f9fafb;border-color:#d1fae5}
+body.light .sb-item.active{background:#dcfce7;color:#16a34a}
+body.light .sb-item:hover{background:#f0fdf4;color:#16a34a}
+body.light .toast{background:#fff}
+body.light #notif-panel{background:#fff;border-color:#d1fae5}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex}
+.sidebar{width:var(--sidebar);background:var(--card);border-right:1px solid var(--border);position:fixed;top:0;left:0;height:100vh;z-index:100;display:flex;flex-direction:column;overflow-y:auto;transition:transform .3s}
+.sb-logo{padding:20px 18px 16px;border-bottom:1px solid var(--border)}
+.sb-logo-row{display:flex;align-items:center;gap:10px;margin-bottom:3px}
+.sb-shield{width:34px;height:34px;border-radius:8px;background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.25);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.sb-app-name{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;color:var(--green)}
+.sb-ai-badge{font-size:9px;background:rgba(74,222,128,.15);color:var(--green);border:1px solid rgba(74,222,128,.25);padding:1px 5px;border-radius:3px;font-weight:700}
+.sb-tagline{font-size:10px;color:var(--muted);padding-left:44px}
+.sb-nav{padding:14px 10px;flex:1}
+.sb-section{font-size:10px;font-weight:600;color:var(--muted2);text-transform:uppercase;letter-spacing:.1em;padding:0 10px;margin:14px 0 6px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;margin-bottom:2px;color:var(--muted);font-size:13px;text-decoration:none;transition:all .15s}
+.sb-item:hover{background:rgba(74,222,128,.07);color:var(--green)}
+.sb-item.active{background:rgba(74,222,128,.12);color:var(--green);font-weight:500}
+.sb-item svg{width:16px;height:16px;flex-shrink:0}
+.sb-bottom{padding:12px;border-top:1px solid var(--border)}
+.sb-user{display:flex;align-items:center;gap:10px;padding:10px 8px;border-radius:10px;cursor:pointer;margin-bottom:8px;transition:all .15s}
+.sb-user:hover{background:rgba(255,255,255,.04)}
+.sb-av{width:34px;height:34px;border-radius:50%;background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.3);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--green);flex-shrink:0}
+.sb-uname{font-size:13px;font-weight:600;color:var(--text)}
+.sb-uemail{font-size:11px;color:var(--muted)}
+.main{margin-left:var(--sidebar);flex:1;min-height:100vh;display:flex;flex-direction:column}
+.topbar{background:var(--card);border-bottom:1px solid var(--border);height:60px;padding:0 22px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50}
+.tb-title{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.menu-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:var(--muted);cursor:pointer;display:none;font-size:16px}
+.tb-clock{font-size:12px;color:var(--muted)}
+.notif-btn{position:relative;background:none;border:1px solid var(--border);border-radius:8px;padding:7px 10px;cursor:pointer;color:var(--muted);transition:all .15s}
+.notif-btn:hover{border-color:rgba(74,222,128,.3);color:var(--green)}
+.notif-dot{position:absolute;top:4px;right:4px;width:8px;height:8px;border-radius:50%;background:var(--red);border:1.5px solid var(--card);display:none}
+.page{padding:24px 26px 60px;flex:1}
+.form-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:20px}
+.form-card-title{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;margin-bottom:18px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fg{margin-bottom:14px}
+.fl{font-size:11px;color:var(--muted);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.06em;font-weight:500}
+.form-input{width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:11px 14px;font-size:14px;color:var(--text);font-family:'Inter',sans-serif;outline:none;transition:all .2s}
+.form-input:focus{border-color:rgba(74,222,128,.4)}
+.form-input::placeholder{color:var(--muted2)}
+.month-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:6px}
+.mb{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:8px 4px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;text-align:center;transition:all .15s}
+.mb:hover{border-color:rgba(74,222,128,.3);color:var(--green)}
+.mb.on{background:rgba(74,222,128,.12);border-color:var(--green);color:var(--green)}
+.dtabs{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.dtab{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:7px 12px;font-size:12px;color:var(--muted);cursor:pointer;transition:all .15s}
+.dtab:hover{border-color:rgba(74,222,128,.3);color:var(--green)}
+.dtab.on{background:rgba(74,222,128,.12);border-color:var(--green);color:var(--green);font-weight:600}
+.btn-predict{width:100%;background:var(--green);color:#000;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:all .2s;margin-top:6px}
+.btn-predict:hover{filter:brightness(1.1)}
+.btn-predict:disabled{opacity:.5;cursor:not-allowed}
+.btn-sm{background:var(--green);color:#000;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif}
+.btn-out{background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:7px 12px;font-size:12px;cursor:pointer;transition:all .2s}
+.btn-out:hover{border-color:rgba(74,222,128,.3);color:var(--green)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:100px;padding:5px 14px;font-size:12px;color:var(--muted);cursor:pointer;transition:all .15s}
+.chip:hover{border-color:rgba(74,222,128,.3);color:var(--green)}
+.loading{text-align:center;padding:48px 20px}
+.spinner{width:34px;height:34px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:13px;color:var(--muted)}
+.empty-state{text-align:center;padding:52px 20px}
+.empty-icon{font-size:36px;margin-bottom:14px;opacity:.5}
+.empty-title{font-size:16px;font-weight:600;color:var(--text);margin-bottom:6px;font-family:'Space Grotesk',sans-serif}
+.empty-sub{font-size:13px;color:var(--muted);line-height:1.6}
+.res-loc{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:800;color:var(--green)}
+.res-meta{font-size:12px;color:var(--muted);margin-top:3px}
+.overall-box{border-radius:14px;padding:16px 20px;margin:18px 0;display:flex;align-items:center;gap:16px}
+.overall-title{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:800}
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 9px;border-radius:100px;letter-spacing:.04em}
+.badge-HIGH{background:rgba(248,113,113,.15);color:var(--red)}
+.badge-MEDIUM{background:rgba(251,146,60,.15);color:var(--orange)}
+.badge-LOW{background:rgba(251,191,36,.15);color:var(--yellow)}
+.badge-MINIMAL{background:rgba(74,222,128,.12);color:var(--green)}
+.travel-box{padding:14px 16px;border-radius:12px;margin-bottom:18px;font-size:13px;line-height:1.7}
+.wx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px;margin-bottom:20px}
+.wx-card{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:12px;text-align:center}
+.wx-val{font-size:17px;font-weight:700;font-family:'Space Grotesk',sans-serif}
+.wx-key{font-size:10px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.04em}
+.dis-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;margin-bottom:20px}
+.d-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;cursor:pointer;transition:border-color .2s}
+.d-card:hover{border-color:var(--border2)}
+.d-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.d-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.d-name{font-size:14px;font-weight:600;flex:1}
+.bar-wrap{background:rgba(0,0,0,.3);border-radius:100px;height:6px;overflow:hidden;margin:8px 0}
+.bar{height:100%;border-radius:100px;transition:width 1.2s ease;width:0%}
+.bar-HIGH{background:linear-gradient(90deg,#ef4444,#f87171)}
+.bar-MEDIUM{background:linear-gradient(90deg,#f97316,#fb923c)}
+.bar-LOW{background:linear-gradient(90deg,#eab308,#fbbf24)}
+.bar-MINIMAL{background:linear-gradient(90deg,#16a34a,#4ade80)}
+.d-detail{display:none;border-top:1px solid var(--border);padding-top:10px;margin-top:8px}
+.adv-lang{font-size:10px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
+.adv-text{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:8px}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px}
+.chart-title{font-size:13px;font-weight:600;margin-bottom:14px}
+.chart-wrap{position:relative;height:220px}
+.res-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:18px}
+.nb-banner{border-radius:10px;padding:12px 16px;margin-bottom:10px;display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:1.5}
+.nb-HIGH{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);color:#fca5a5}
+.nb-MEDIUM{background:rgba(251,146,60,.1);border:1px solid rgba(251,146,60,.25);color:#fdba74}
+.toast{position:fixed;bottom:24px;right:24px;z-index:9999;background:var(--card);border:1px solid rgba(74,222,128,.4);border-radius:14px;padding:16px 18px;max-width:320px;box-shadow:0 8px 32px rgba(0,0,0,.5);font-family:'Inter',sans-serif;animation:toastIn .3s ease}
+.toast-danger{border-color:rgba(248,113,113,.4)!important}
+@keyframes toastIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.msg-err{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--red);margin-bottom:14px}
+@media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.menu-btn{display:block}.charts-grid{grid-template-columns:1fr}.two-col{grid-template-columns:1fr}.page{padding:14px 14px 60px}}
+</style>
+</head>
+<body>
+
+<nav class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-row"><div class="sb-shield">🛡</div><span class="sb-app-name">GeoGuard</span><span class="sb-ai-badge">AI</span></div>
+    <div class="sb-tagline">Early Warning & Resource Allocation</div>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-section">Prediction</div>
+    <a class="sb-item active" href="dashboard.html"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>Dashboard</a>
+    <a class="sb-item" href="map.html"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12 1.586l-4 4v12.828l4-4V1.586zM3.707 3.293A1 1 0 002 4v10a1 1 0 00.293.707L6 18.414V5.586L3.707 3.293zM17.707 5.293L14 1.586v12.828l2.293 2.293A1 1 0 0018 16V6a1 1 0 00-.293-.707z" clip-rule="evenodd"/></svg>Risk Map</a>
+    <a class="sb-item" href="history.html"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 16H15a2 2 0 002-2V5a1 1 0 100-2H3z" clip-rule="evenodd"/></svg>Historical Data</a>
+    <div class="sb-section">Resources</div>
+    <a class="sb-item" href="ngo.html"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/></svg>NGO Portal</a>
+    <a class="sb-item" href="resources.html"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5z" clip-rule="evenodd"/></svg>Resource Requests</a>
+    <div class="sb-section">Account</div>
+    <a class="sb-item" href="profile.html"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg>My Profile</a>
+  </div>
+  <div class="sb-bottom">
+    <div class="sb-user" onclick="location.href='profile.html'">
+      <div class="sb-av" id="sb-initials">U</div>
+      <div><div class="sb-uname" id="sb-name">User</div><div class="sb-uemail" id="sb-email"></div></div>
+    </div>
+    <button class="btn-out" style="width:100%;font-size:12px;padding:8px" onclick="doLogout()">Sign Out</button>
+  </div>
+</nav>
+
+<div class="main">
+  <div class="topbar">
+    <button class="menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+    <div class="tb-title">Disaster Risk Dashboard</div>
+    <div class="tb-right">
+      <button class="notif-btn" onclick="toggleNotifPanel()" id="notif-btn-el" title="Notifications">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="notif-dot" id="notif-dot"></span>
+      </button>
+      <button class="theme-toggle-btn" onclick="toggleTheme()" style="background:none;border:1px solid var(--border);border-radius:8px;padding:7px 10px;cursor:pointer;color:var(--muted);font-size:16px;line-height:1;transition:all .15s">🌙</button>
+      <span class="tb-clock" id="tb-clock"></span>
+    </div>
+  </div>
+
+  <!-- Notification Panel -->
+  <div id="notif-panel" style="display:none;position:fixed;top:65px;right:16px;z-index:500;width:340px;max-height:480px;overflow-y:auto;background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.5)">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--card)">
+      <span style="font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700">🔔 Notifications</span>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button onclick="checkNearby(false)" style="background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.25);color:var(--green);border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;font-weight:600">Refresh</button>
+        <button onclick="closePanel()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;line-height:1;padding:0">×</button>
+      </div>
+    </div>
+    <div id="notif-body" style="padding:10px">
+      <div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">
+        <div style="font-size:24px;margin-bottom:8px">🛡</div>
+        Click Refresh to check nearby alerts
+      </div>
+    </div>
+  </div>
+
+  <div class="page">
+    <div id="nearby-sec"></div>
+
+    <!-- FORM -->
+    <div class="form-card">
+      <div class="form-card-title">🎯 Predict Disaster Risk</div>
+      <div class="two-col">
+        <div class="fg">
+          <label class="fl">Location *</label>
+          <div style="display:flex;gap:8px">
+            <input class="form-input" id="inp-loc" placeholder="Any Indian city — Dehradun, Mumbai, Shimla..." style="flex:1" onkeydown="if(event.key==='Enter')runPredict()">
+            <button class="btn-out" onclick="useGPS()" style="padding:11px 12px" title="Use GPS">📍</button>
+          </div>
+        </div>
+        <div class="fg">
+          <label class="fl">Phone for SMS Alerts (optional)</label>
+          <input class="form-input" id="inp-phone" type="tel" placeholder="+91 XXXXXXXXXX">
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">Month</label>
+        <div class="month-grid" id="month-grid"></div>
+      </div>
+      <div class="fg">
+        <label class="fl">Disaster Type</label>
+        <div class="dtabs" id="dtabs">
+          <div class="dtab on" data-d="all">🌍 All Disasters</div>
+          <div class="dtab" data-d="landslide">⛰ Landslide</div>
+          <div class="dtab" data-d="flood">🌊 Flood</div>
+          <div class="dtab" data-d="cyclone">🌀 Cyclone</div>
+          <div class="dtab" data-d="drought">☀️ Drought</div>
+          <div class="dtab" data-d="earthquake">🏚 Earthquake</div>
+        </div>
+      </div>
+      <button class="btn-predict" id="btn-predict" onclick="runPredict()">🔍 Predict Risk Now</button>
+      <div class="chips" id="chips-row">
+        <span class="chip" onclick="qk('Dehradun')">Dehradun</span>
+        <span class="chip" onclick="qk('Shimla')">Shimla</span>
+        <span class="chip" onclick="qk('Mumbai')">Mumbai</span>
+        <span class="chip" onclick="qk('Chennai')">Chennai</span>
+        <span class="chip" onclick="qk('Cherrapunji')">Cherrapunji</span>
+        <span class="chip" onclick="qk('Manali')">Manali</span>
+        <span class="chip" onclick="qk('Puri')">Puri</span>
+        <span class="chip" onclick="qk('Guwahati')">Guwahati</span>
+      </div>
+    </div>
+
+    <div class="loading" id="div-loading" style="display:none">
+      <div class="spinner"></div>
+      <div class="loading-text" id="loading-txt">Fetching NASA live data...</div>
+    </div>
+    <div id="div-error" style="display:none"></div>
+
+    <div id="div-results" style="display:none">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:4px">
+        <div><div class="res-loc" id="res-loc"></div><div class="res-meta" id="res-meta"></div></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn-sm" id="save-btn" onclick="saveLoc()">+ Save</button>
+          <button class="btn-out" onclick="location.href='resources.html'">Request Help</button>
+        </div>
+      </div>
+      <div class="overall-box" id="overall-box">
+        <span style="font-size:32px;flex-shrink:0" id="ov-icon"></span>
+        <div style="flex:1">
+          <div style="font-size:11px;opacity:.6;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Overall Risk</div>
+          <div class="overall-title" id="ov-title"></div>
+        </div>
+        <span class="badge" id="ov-badge"></span>
+      </div>
+      <div class="travel-box" id="travel-box">
+        <div id="travel-en" style="margin-bottom:6px"></div>
+        <div id="travel-hi" style="opacity:.75"></div>
+      </div>
+      <div class="wx-grid" id="wx-grid"></div>
+      <div class="dis-grid" id="dis-grid"></div>
+      <div class="charts-grid">
+        <div class="chart-card"><div class="chart-title">Confidence by Disaster</div><div class="chart-wrap"><canvas id="ch-bar"></canvas></div></div>
+        <div class="chart-card"><div class="chart-title">Risk Radar</div><div class="chart-wrap"><canvas id="ch-radar"></canvas></div></div>
+      </div>
+      <div class="res-card" id="res-card" style="display:none">
+        <div class="chart-title">⚡ Early Resource Allocation</div>
+        <div id="res-plan"></div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px" id="data-src"></div>
+    </div>
+
+    <div class="empty-state" id="div-empty">
+      <div class="empty-icon">🛡</div>
+      <div class="empty-title">Enter a location to predict</div>
+      <div class="empty-sub">Select location, month and disaster type.<br>GeoGuard uses real-time NASA satellite data.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ── Config ────────────────────────────────────────
+var API = 'http://localhost:8000';
+
+// ── State ─────────────────────────────────────────
+var selMonth = new Date().getMonth() + 1;
+var selDis   = 'all';
+var lastData = null;
+var chBar = null, chRadar = null;
+var notifOpen = false;
+var notifList = [];
+var savedLocs = [];
+var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+var DM = {
+  landslide: {name:'Landslide', em:'⛰', bg:'rgba(251,146,60,.1)'},
+  flood:     {name:'Flood',     em:'🌊', bg:'rgba(96,165,250,.1)'},
+  cyclone:   {name:'Cyclone',   em:'🌀', bg:'rgba(167,139,250,.1)'},
+  drought:   {name:'Drought',   em:'☀️', bg:'rgba(251,191,36,.1)'},
+  earthquake:{name:'Earthquake',em:'🏚', bg:'rgba(248,113,113,.1)'},
+};
+var RC = {HIGH:'#f87171',MEDIUM:'#fb923c',LOW:'#fbbf24',MINIMAL:'#4ade80'};
+var RB = {HIGH:'rgba(248,113,113,.1)',MEDIUM:'rgba(251,146,60,.1)',LOW:'rgba(251,191,36,.08)',MINIMAL:'rgba(74,222,128,.08)'};
+var RD = {HIGH:'rgba(248,113,113,.3)',MEDIUM:'rgba(251,146,60,.3)',LOW:'rgba(251,191,36,.25)',MINIMAL:'rgba(74,222,128,.25)'};
+
+// ── Helpers ───────────────────────────────────────
+function tok(){ return localStorage.getItem('gg_token')||''; }
+function usr(){ try{return JSON.parse(localStorage.getItem('gg_user'));}catch(e){return null;} }
+function G(id){ return document.getElementById(id); }
+function S(id){ var e=G(id); if(e) e.style.display='block'; }
+function H(id){ var e=G(id); if(e) e.style.display='none'; }
+function T(id,v){ var e=G(id); if(e) e.textContent=v; }
+function doLogout(){ localStorage.removeItem('gg_token'); localStorage.removeItem('gg_user'); location.href='index.html'; }
+
+// ── API ───────────────────────────────────────────
+async function api(url, body, method) {
+  var m = method || (body ? 'POST' : 'GET');
+  var h = {'Content-Type':'application/json'};
+  var t = tok(); if(t) h['Authorization']='Bearer '+t;
+  var opts = {method:m, headers:h};
+  if(body) opts.body = JSON.stringify(body);
+  var res  = await fetch(API+url, opts);
+  var data = await res.json();
+  if(!res.ok) throw new Error(data.detail||'Request failed');
+  return data;
+}
+
+// ── Clock (starts immediately) ────────────────────
+(function startClock(){
+  function tick(){
+    var e = G('tb-clock');
+    if(e) e.textContent = new Date().toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'});
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+
+// ── Init ──────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', function(){
+  if(!tok()||!usr()){ location.href='index.html'; return; }
+
+  var user = usr();
+  if(user){
+    T('sb-name', user.name||'User');
+    T('sb-email', user.email||'');
+    T('sb-initials', (user.name||'U')[0].toUpperCase());
+  }
+
+  // Month grid
+  var grid = G('month-grid');
+  if(grid){
+    MONTHS.forEach(function(m,i){
+      var mn=i+1, btn=document.createElement('div');
+      btn.className='mb'+(mn===selMonth?' on':'');
+      btn.textContent=m;
+      btn.onclick=function(){
+        selMonth=mn;
+        document.querySelectorAll('.mb').forEach(function(b){b.classList.remove('on');});
+        btn.classList.add('on');
+      };
+      grid.appendChild(btn);
+    });
+  }
+
+  // Disaster tabs
+  document.querySelectorAll('.dtab').forEach(function(tab){
+    tab.addEventListener('click', function(){
+      document.querySelectorAll('.dtab').forEach(function(t){t.classList.remove('on');});
+      tab.classList.add('on');
+      selDis = tab.getAttribute('data-d');
+    });
+  });
+
+  // Notifications permission
+  if('Notification' in window && Notification.permission==='default') Notification.requestPermission();
+
+  // Welcome
+  sendWelcome(user);
+
+  // Nearby monitor
+  setTimeout(function(){ checkNearby(true); }, 4000);
+  setInterval(function(){ checkNearby(false); }, 30*60*1000);
+
+  // Backend check
+  fetch(API+'/health').then(function(r){
+    if(!r.ok) showErr('Backend not responding. Start: uvicorn main:app --port 8000 --reload');
+  }).catch(function(){
+    showErr('Cannot connect to backend. CMD mein chalao: uvicorn main:app --port 8000 --reload');
+  });
+
+  // Load saved chips
+  loadChips();
+});
+
+// ── Predict ───────────────────────────────────────
+function qk(name){ G('inp-loc').value=name; runPredict(); }
+
+function useGPS(){
+  if(!navigator.geolocation){alert('GPS not supported');return;}
+  navigator.geolocation.getCurrentPosition(function(pos){
+    var lat=pos.coords.latitude, lon=pos.coords.longitude;
+    fetch('https://nominatim.openstreetmap.org/reverse?lat='+lat+'&lon='+lon+'&format=json',
+      {headers:{'User-Agent':'GeoGuard/2.0'}})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      var c=(d.address&&(d.address.city||d.address.town||d.address.village))||lat.toFixed(3)+','+lon.toFixed(3);
+      G('inp-loc').value=c; runPredict();
+    }).catch(function(){ G('inp-loc').value=lat.toFixed(4)+','+lon.toFixed(4); runPredict(); });
+  }, function(){alert('GPS permission denied');});
+}
+
+async function runPredict(){
+  var loc=(G('inp-loc').value||'').trim();
+  if(!loc){alert('Please enter a location name');return;}
+  var phone=(G('inp-phone').value||'').trim()||null;
+
+  H('div-results'); H('div-empty'); H('div-error');
+  S('div-loading');
+  G('btn-predict').disabled=true;
+  T('loading-txt','Fetching NASA live data for '+loc+'...');
+
+  try{
+    var d=await api('/predict',{location:loc,month:selMonth,disaster:selDis,duration_days:3,phone:phone},'POST');
+    lastData=d;
+    H('div-loading');
+    renderResults(d);
+  }catch(e){
+    H('div-loading');
+    showErr('Error: '+e.message+'<br>Make sure backend is running: <code style="background:rgba(0,0,0,.3);padding:2px 5px;border-radius:4px">uvicorn main:app --port 8000 --reload</code>');
+    S('div-empty');
+  }
+  G('btn-predict').disabled=false;
+}
+
+function showErr(msg){
+  var e=G('div-error');
+  e.className='msg-err'; e.innerHTML=msg; S('div-error');
+}
+
+// ── Render ────────────────────────────────────────
+function renderResults(d){
+  S('div-results'); H('div-empty');
+  var risk=d.overall_risk||'MINIMAL';
+  var ICONS={HIGH:'🚨',MEDIUM:'⚠️',LOW:'🌧',MINIMAL:'✅'};
+  var TITLES={HIGH:'High Alert — Immediate action recommended',MEDIUM:'Moderate Risk — Stay vigilant',LOW:'Low Risk — Monitor conditions',MINIMAL:'Safe — No significant risk'};
+
+  T('res-loc',(d.display_name||d.location)+' — '+(d.month_name||''));
+  T('res-meta',(d.timestamp||'')+' · Zone '+(d.seismic_zone||'—')+' · '+(d.weather?d.weather.source:''));
+
+  var ob=G('overall-box');
+  ob.style.background=RB[risk]; ob.style.border='1px solid '+RD[risk];
+  T('ov-icon',ICONS[risk]);
+  T('ov-title',TITLES[risk]);
+  var b=G('ov-badge'); b.textContent=risk; b.className='badge badge-'+risk;
+
+  var tb=G('travel-box');
+  tb.style.background=RB[risk]; tb.style.border='1px solid '+RD[risk];
+  T('travel-en','🇬🇧 '+(d.travel_advice_en||''));
+  T('travel-hi','🇮🇳 '+(d.travel_advice_hi||''));
+
+  // Weather
+  var wx=d.weather||{};
+  G('wx-grid').innerHTML=[
+    {v:(wx.rain_today??'—')+' mm',k:'Rain Today'},
+    {v:(wx.rain_3day??'—')+' mm',k:'3-Day Rain'},
+    {v:(wx.rain_7day??'—')+' mm',k:'7-Day Rain'},
+    {v:(wx.temp??'—')+'°C',k:'Temp'},
+    {v:(wx.humidity??'—')+'%',k:'Humidity'},
+    {v:wx.soil?(wx.soil*100).toFixed(0)+'%':'—',k:'Soil'},
+    {v:(wx.wind??'—')+' m/s',k:'Wind'},
+  ].map(function(x){return '<div class="wx-card"><div class="wx-val">'+x.v+'</div><div class="wx-key">'+x.k+'</div></div>';}).join('');
+
+  // Disaster cards
+  var dis=d.disasters||{}, html='';
+  Object.keys(dis).forEach(function(k){
+    var v=dis[k], info=DM[k]||{name:k,em:'⚠',bg:'rgba(74,222,128,.1)'};
+    var r=v.risk||'MINIMAL', c=v.confidence||0;
+    html+='<div class="d-card" onclick="var dt=this.querySelector(\'.d-detail\');dt.style.display=dt.style.display===\'block\'?\'none\':\'block\'">'+
+      '<div class="d-head">'+
+        '<div class="d-icon" style="background:'+info.bg+'">'+info.em+'</div>'+
+        '<div class="d-name">'+info.name+'</div>'+
+        '<span class="badge badge-'+r+'">'+r+'</span>'+
+        (v.is_good_month!==undefined?'<span style="font-size:10px;padding:2px 8px;border-radius:100px;background:'+(v.is_good_month?'rgba(74,222,128,.1)':'rgba(248,113,113,.1)')+';color:'+(v.is_good_month?'var(--green)':'var(--red)')+'">'+( v.is_good_month?'✓ Safe':'⚠ Risky')+'</span>':'')+
+      '</div>'+
+      '<div class="bar-wrap"><div class="bar bar-'+r+'" style="width:0%" data-c="'+c+'"></div></div>'+
+      '<div style="font-size:12px;color:var(--muted)">'+c+'% confidence</div>'+
+      '<div class="d-detail">'+
+        '<div><div class="adv-lang">English</div><div class="adv-text">'+(v.advice_en||'')+'</div></div>'+
+        '<div><div class="adv-lang">हिंदी</div><div class="adv-text">'+(v.advice_hi||'')+'</div></div>'+
+        (v.travel_tip_en?'<div style="font-size:11px;color:var(--muted2);border-top:1px solid var(--border);padding-top:8px;margin-top:6px">Travel tip: '+v.travel_tip_en+'</div>':'')+
+      '</div>'+
+      '<div style="font-size:10px;color:var(--muted2);text-align:right;margin-top:6px">↓ Click for Hindi/English advice</div>'+
+    '</div>';
+  });
+  G('dis-grid').innerHTML=html;
+  setTimeout(function(){
+    document.querySelectorAll('.bar[data-c]').forEach(function(b){b.style.width=b.getAttribute('data-c')+'%';});
+  },80);
+
+  renderCharts(dis);
+  if(d.resources) renderRes(d.resources);
+  T('data-src','Source: '+(wx.source||'NASA POWER')+' · '+(d.timestamp||''));
+
+  // Update save button
+  updateSaveBtn();
+}
+
+function renderCharts(dis){
+  var keys=Object.keys(dis);
+  var labels=keys.map(function(k){return (DM[k]||{name:k}).name;});
+  var vals=keys.map(function(k){return dis[k].confidence||0;});
+  var bgs=keys.map(function(k){return RB[dis[k].risk]||'rgba(74,222,128,.08)';});
+  var bds=keys.map(function(k){return RC[dis[k].risk]||'#4ade80';});
+  var base={responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{labels:{color:'#5a8068',font:{family:'Inter',size:11}}},
+      tooltip:{backgroundColor:'#0a1410',borderColor:'#162b1e',borderWidth:1,titleColor:'#e8f5ee',bodyColor:'#5a8068'}},
+    scales:{x:{ticks:{color:'#5a8068',font:{family:'Inter',size:11}},grid:{color:'rgba(255,255,255,.04)'}},
+      y:{ticks:{color:'#5a8068',font:{family:'Inter',size:11}},grid:{color:'rgba(255,255,255,.04)'}}}};
+  if(chBar){chBar.destroy();chBar=null;}
+  var bc=G('ch-bar');
+  if(bc) chBar=new Chart(bc.getContext('2d'),{type:'bar',data:{labels:labels,datasets:[{label:'Confidence %',data:vals,backgroundColor:bgs,borderColor:bds,borderWidth:1.5,borderRadius:6}]},
+    options:Object.assign({},base,{plugins:Object.assign({},base.plugins,{legend:{display:false}}),
+      scales:Object.assign({},base.scales,{y:Object.assign({},base.scales.y,{min:0,max:100,ticks:Object.assign({},base.scales.y.ticks,{callback:function(v){return v+'%';}})})})})});
+  if(chRadar){chRadar.destroy();chRadar=null;}
+  var rc=G('ch-radar');
+  if(rc) chRadar=new Chart(rc.getContext('2d'),{type:'radar',
+    data:{labels:labels,datasets:[{label:'Risk',data:vals,backgroundColor:'rgba(74,222,128,.08)',borderColor:'#4ade80',pointBackgroundColor:bds,pointRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:base.plugins.tooltip},
+      scales:{r:{min:0,max:100,ticks:{color:'#5a8068',font:{size:10},stepSize:25},grid:{color:'rgba(255,255,255,.06)'},pointLabels:{color:'#5a8068',font:{size:10}},angleLines:{color:'rgba(255,255,255,.05)'}}}}});
+}
+
+function renderRes(res){
+  var card=G('res-card'), plan=G('res-plan'); if(!card||!plan)return;
+  var pCol={CRITICAL:'#f87171',HIGH:'#fb923c',NORMAL:'#4ade80'}[res.priority]||'#4ade80';
+  var h='<div style="display:inline-block;font-size:11px;font-weight:700;padding:3px 12px;border-radius:100px;background:'+pCol+'22;color:'+pCol+';margin-bottom:12px">'+(res.priority||'NORMAL')+' PRIORITY</div>';
+  if(res.recommendations&&res.recommendations.length)
+    h+='<div>'+res.recommendations.map(function(r){return '<div style="display:flex;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px;color:var(--muted)"><span style="color:var(--green);flex-shrink:0">›</span>'+r+'</div>';}).join('')+'</div>';
+  if(res.resources&&Object.keys(res.resources).length)
+    h+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-top:12px">'+
+      Object.entries(res.resources).map(function(e){return '<div style="background:rgba(255,255,255,.03);border-radius:10px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:800;color:var(--green)">'+e[1]+'</div><div style="font-size:11px;color:var(--muted);margin-top:2px">'+e[0].replace(/_/g,' ')+'</div></div>';}).join('')+'</div>';
+  plan.innerHTML=h; S('res-card');
+}
+
+// ── Nearby / Alerts ───────────────────────────────
+async function checkNearby(silent){
+  if(!navigator.geolocation) return null;
+  return new Promise(function(resolve){
+    navigator.geolocation.getCurrentPosition(async function(pos){
+      try{
+        var d=await api('/predict/nearby',{lat:pos.coords.latitude,lon:pos.coords.longitude,radius_km:150},'POST');
+        var high=(d.alerts||[]).filter(function(a){return a.risk_level==='HIGH';});
+        G('notif-dot').style.display=high.length>0?'block':'none';
+        if(high.length>0&&!silent){
+          high.forEach(function(a){ pushNotif('danger',a.name+' — HIGH Risk',a.msg_en,a.msg_hi); });
+          showToast({title:high[0].name+' — Danger!',msg_en:high[0].msg_en,msg_hi:high[0].msg_hi},'danger');
+          if(Notification.permission==='granted')
+            new Notification('GeoGuard — Danger Nearby!',{body:high[0].msg_en});
+        }
+        var sec=G('nearby-sec');
+        if(high.length>0){
+          sec.innerHTML='<div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">⚠ Nearby Danger Zones</div>'+
+            high.slice(0,3).map(function(a){return '<div class="nb-banner nb-'+a.risk_level+'"><span style="font-size:16px;flex-shrink:0">🚨</span><div><strong>'+a.name+'</strong> — '+a.disaster+' · '+a.distance_km+'km<br><span style="font-size:12px;opacity:.8">'+a.msg_hi+'</span></div></div>';}).join('');
+        }else{sec.innerHTML='';}
+        if(notifOpen) renderPanel(d);
+        resolve(d);
+      }catch(e){console.log('Nearby:',e.message); resolve(null);}
+    }, function(){ resolve(null); });
+  });
+}
+
+function showToast(data,type){
+  var old=G('gg-toast'); if(old) old.remove();
+  var div=document.createElement('div');
+  div.id='gg-toast';
+  div.className='toast'+(type==='danger'?' toast-danger':'');
+  div.innerHTML='<div style="display:flex;gap:10px;align-items:flex-start">'+
+    '<span style="font-size:20px;flex-shrink:0">'+(type==='danger'?'🚨':'🛡')+'</span>'+
+    '<div style="flex:1">'+
+      '<div style="font-size:13px;font-weight:600;color:'+(type==='danger'?'#fca5a5':'var(--green)')+';margin-bottom:4px">'+(data.title||'GeoGuard')+'</div>'+
+      '<div style="font-size:12px;color:var(--muted);line-height:1.5">'+(data.msg_en||'')+'</div>'+
+      (data.msg_hi?'<div style="font-size:12px;color:var(--muted);margin-top:3px">'+data.msg_hi+'</div>':'')+
+    '</div>'+
+    '<button onclick="G(\'gg-toast\').remove()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;padding:0;flex-shrink:0">×</button>'+
+  '</div>';
+  document.body.appendChild(div);
+  setTimeout(function(){if(div.parentNode)div.remove();},10000);
+}
+
+// ── Notification Panel ────────────────────────────
+function toggleNotifPanel(){
+  notifOpen=!notifOpen;
+  G('notif-panel').style.display=notifOpen?'block':'none';
+  if(notifOpen){ renderPanel(null); checkNearby(true); }
+}
+function closePanel(){
+  notifOpen=false;
+  G('notif-panel').style.display='none';
+}
+document.addEventListener('click',function(e){
+  var panel=G('notif-panel'), btn=G('notif-btn-el');
+  if(panel&&btn&&!panel.contains(e.target)&&!btn.contains(e.target)){
+    notifOpen=false; panel.style.display='none';
+  }
+});
+function pushNotif(type,title,enMsg,hiMsg){
+  notifList.unshift({type:type,title:title,en:enMsg,hi:hiMsg,time:new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})});
+  if(notifList.length>20) notifList=notifList.slice(0,20);
+  G('notif-dot').style.display='block';
+  if(notifOpen) renderPanel(null);
+}
+function renderPanel(nearbyData){
+  var body=G('notif-body'); if(!body) return;
+  var html='';
+  // Nearby section
+  if(nearbyData){
+    var high=(nearbyData.alerts||[]).filter(function(a){return a.risk_level==='HIGH';});
+    if(high.length>0){
+      html+='<div style="font-size:10px;font-weight:600;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Nearby HIGH Risk Zones</div>';
+      html+=high.map(function(a){
+        return '<div style="border:1px solid rgba(248,113,113,.3);border-radius:10px;padding:12px;margin-bottom:8px;background:rgba(248,113,113,.06)">'+
+          '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">'+
+            '<span>🚨</span><span style="font-size:12px;font-weight:600;color:#f87171;flex:1">'+a.name+'</span>'+
+            '<span style="font-size:10px;color:var(--muted)">'+a.distance_km+' km</span>'+
+          '</div>'+
+          '<div style="font-size:12px;color:#fca5a5;line-height:1.5">'+a.msg_en+'</div>'+
+          '<div style="font-size:12px;color:var(--muted);margin-top:3px">'+a.msg_hi+'</div>'+
+          '<button onclick="G(\'inp-loc\').value=\''+a.name+'\';closePanel();runPredict();" '+
+            'style="margin-top:8px;background:rgba(248,113,113,.15);border:1px solid rgba(248,113,113,.3);color:#f87171;border-radius:6px;padding:4px 12px;font-size:11px;cursor:pointer;font-weight:600">'+
+            'Predict '+a.name+' →</button>'+
+        '</div>';
+      }).join('');
+    }else if(nearbyData.alerts!==undefined){
+      html+='<div style="text-align:center;padding:12px;color:var(--muted);font-size:13px">✅ No HIGH risk zones within 150km.</div>';
+    }
+  }
+  // Notification history
+  if(notifList.length>0){
+    var COL={danger:'#f87171',warn:'#fb923c',info:'#4ade80',welcome:'#60a5fa'};
+    var ICO={danger:'🚨',warn:'⚠️',info:'ℹ️',welcome:'🛡'};
+    html+='<div style="font-size:10px;font-weight:600;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em;margin:12px 0 8px">Recent Notifications</div>';
+    html+=notifList.map(function(n){
+      var col=COL[n.type]||'#4ade80', ico=ICO[n.type]||'🔔';
+      return '<div style="border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px;margin-bottom:8px;background:rgba(255,255,255,.02)">'+
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">'+
+          '<span>'+ico+'</span><span style="font-size:12px;font-weight:600;color:'+col+';flex:1">'+n.title+'</span>'+
+          '<span style="font-size:10px;color:var(--muted)">'+n.time+'</span>'+
+        '</div>'+
+        '<div style="font-size:12px;color:var(--muted);line-height:1.5">'+n.en+'</div>'+
+        (n.hi?'<div style="font-size:12px;color:var(--muted2);margin-top:2px">'+n.hi+'</div>':'')+
+      '</div>';
+    }).join('');
+  }
+  if(!html){
+    html='<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px"><div style="font-size:24px;margin-bottom:8px">🛡</div>Click Refresh to check nearby alerts</div>';
+  }
+  body.innerHTML=html;
+}
+
+// ── Welcome ───────────────────────────────────────
+function sendWelcome(user){
+  if(!user) return;
+  var k='gg_wc_'+(user.id||user.email);
+  if(localStorage.getItem(k)) return;
+  localStorage.setItem(k,'1');
+  if(Notification.permission==='granted'){
+    setTimeout(function(){
+      new Notification('Welcome to GeoGuard AI! 🛡',{body:'Hello '+user.name+'! Disaster predictions ready.'});
+    },1500);
+  }
+  pushNotif('welcome','Welcome, '+(user.name||'User')+'! 🛡',
+    'GeoGuard AI is active. Real-time disaster predictions are ready.',
+    'GeoGuard AI चालू है। रियल-टाइम आपदा भविष्यवाणियाँ तैयार हैं।'
+  );
+  setTimeout(function(){
+    showToast({title:'Welcome, '+(user.name||'User')+'! 🛡',
+      msg_en:'GeoGuard AI is monitoring disaster risks. Stay safe!'},'welcome');
+  },1000);
+}
+
+// ── Save Location ─────────────────────────────────
+async function saveLoc(){
+  if(!lastData) return;
+  var name=lastData.location;
+  var already=savedLocs.find(function(l){return l.location_name.toLowerCase()===name.toLowerCase();});
+  if(already){
+    if(confirm('"'+name+'" already saved. Remove it?')) await unsaveLoc(already._id,name);
+    return;
+  }
+  try{
+    await api('/user/save-location',{location_name:name,lat:lastData.lat,lon:lastData.lon},'POST');
+    showToast({title:'Saved!',msg_en:'"'+name+'" added to saved locations.'},'welcome');
+    await loadChips();
+  }catch(e){alert(e.message);}
+}
+async function unsaveLoc(id,name){
+  try{
+    await api('/user/saved-location/'+id,null,'DELETE');
+    showToast({title:'Removed',msg_en:'"'+name+'" removed.'},'welcome');
+    await loadChips();
+  }catch(e){alert(e.message);}
+}
+function updateSaveBtn(){
+  var btn=G('save-btn'); if(!btn||!lastData) return;
+  var saved=savedLocs.find(function(l){return l.location_name.toLowerCase()===lastData.location.toLowerCase();});
+  if(saved){
+    btn.textContent='✓ Saved'; btn.style.background='rgba(74,222,128,.15)';
+    btn.style.color='var(--green)'; btn.style.border='1px solid rgba(74,222,128,.3)';
+  }else{
+    btn.textContent='+ Save'; btn.style.background='var(--green)';
+    btn.style.color='#000'; btn.style.border='none';
+  }
+}
+async function loadChips(){
+  // Remove old saved chips
+  var ol=G('saved-chips-label'), or_=G('saved-chips-row');
+  if(ol) ol.remove(); if(or_) or_.remove();
+  try{
+    var d=await api('/user/profile',null,'GET');
+    savedLocs=d.saved_locations||[];
+    if(!savedLocs.length) return;
+    var chipRow=G('chips-row'); if(!chipRow) return;
+    var label=document.createElement('div');
+    label.id='saved-chips-label';
+    label.style.cssText='width:100%;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;margin-top:4px';
+    label.textContent='Saved locations';
+    var row=document.createElement('div');
+    row.id='saved-chips-row';
+    row.style.cssText='display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px';
+    savedLocs.forEach(function(l){
+      var chip=document.createElement('span');
+      chip.style.cssText='display:inline-flex;align-items:center;gap:5px;background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.3);border-radius:100px;padding:4px 6px 4px 12px;font-size:12px;color:var(--green)';
+      var ns=document.createElement('span');
+      ns.textContent=l.location_name; ns.style.cursor='pointer';
+      ns.onclick=function(){qk(l.location_name);};
+      var del=document.createElement('button');
+      del.textContent='×'; del.title='Remove '+l.location_name;
+      del.style.cssText='background:rgba(248,113,113,.15);border:none;color:#f87171;cursor:pointer;border-radius:50%;width:18px;height:18px;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1;padding:0';
+      del.onclick=function(e){e.stopPropagation();if(confirm('Remove "'+l.location_name+'"?'))unsaveLoc(l._id,l.location_name);};
+      chip.appendChild(ns); chip.appendChild(del); row.appendChild(chip);
+    });
+    chipRow.parentNode.insertBefore(label,chipRow);
+    chipRow.parentNode.insertBefore(row,chipRow);
+    updateSaveBtn();
+  }catch(e){console.log('loadChips:',e.message);}
+}
+</script>
+</body>
+</html>

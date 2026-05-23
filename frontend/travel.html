@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Travel Planner — DisasterSense</title>
+<link rel="stylesheet" href="shared.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="app">
+<nav class="sidebar" id="sidebar">
+  <div class="sb-logo"><div class="sb-logo-mark"><span class="sb-logo-text">DisasterSense</span></div><div class="sb-logo-sub">Prediction System</div></div>
+  <div class="sb-nav">
+    <a class="sb-item" href="dashboard.html"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>Dashboard</a>
+    <a class="sb-item active" href="travel.html"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>Travel Planner</a>
+    <a class="sb-item" href="map.html"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12 1.586l-4 4v12.828l4-4V1.586zM3.707 3.293A1 1 0 002 4v10a1 1 0 00.293.707L6 18.414V5.586L3.707 3.293zM17.707 5.293L14 1.586v12.828l2.293 2.293A1 1 0 0018 16V6a1 1 0 00-.293-.707z" clip-rule="evenodd"/></svg>Risk Map</a>
+    <a class="sb-item" href="history.html"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 16H15a2 2 0 002-2V5a1 1 0 100-2H3z" clip-rule="evenodd"/></svg>Historical Data</a>
+    <a class="sb-item" href="ngo.html"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/></svg>NGO Portal</a>
+    <a class="sb-item" href="resources.html"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5z" clip-rule="evenodd"/></svg>Resource Requests</a>
+  </div>
+  <div class="sb-bottom">
+    <div class="sb-user"><div class="sb-avatar" id="sb-initials">U</div><div><div class="sb-uname" id="sb-name">User</div><div class="sb-uemail" id="sb-email"></div></div></div>
+    <button class="btn-outline" style="width:100%;font-size:12px;padding:8px" onclick="logout()">Sign Out</button>
+  </div>
+</nav>
+<div class="main">
+  <div class="topbar">
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+    <div class="tb-title">Travel Planner</div>
+    <div class="tb-right"><span class="tb-time" id="tb-time"></span></div>
+  </div>
+  <div class="page">
+    <div class="page-header">
+      <div class="page-title">Travel Risk Planner</div>
+      <div class="page-sub">Check which months are safest to visit any location in India</div>
+    </div>
+    <div class="search-bar">
+      <input class="search-input" id="t-loc" placeholder="Where are you planning to visit? e.g. Shimla, Goa, Darjeeling" onkeydown="if(event.key==='Enter')tPredict()">
+      <button class="btn" onclick="tPredict()">Check Risk</button>
+    </div>
+    <div class="chips">
+      <span class="chip" onclick="tq('Shimla')">Shimla</span>
+      <span class="chip" onclick="tq('Goa')">Goa</span>
+      <span class="chip" onclick="tq('Darjeeling')">Darjeeling</span>
+      <span class="chip" onclick="tq('Manali')">Manali</span>
+      <span class="chip" onclick="tq('Kerala')">Kerala</span>
+      <span class="chip" onclick="tq('Ladakh')">Ladakh</span>
+    </div>
+    <div class="loading hidden" id="t-loading"><div class="spinner"></div><div class="loading-text">Calculating monthly risks...</div></div>
+    <div id="t-results" class="hidden">
+      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--accent);margin-bottom:6px" id="t-header"></div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:18px" id="t-summary"></div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title">Monthly Risk Heatmap — Click any month for details</div>
+        <div id="t-calendar" style="display:grid;grid-template-columns:repeat(12,1fr);gap:6px"></div>
+      </div>
+      <div class="charts-grid">
+        <div class="chart-card">
+          <div class="card-title">All Disasters by Month</div>
+          <div class="chart-wrap"><canvas id="t-line"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="card-title" id="t-month-title">Select a month above</div>
+          <div id="t-month-detail" style="padding:10px"></div>
+        </div>
+      </div>
+    </div>
+    <div class="empty" id="t-empty"><div class="empty-icon">✈️</div><div class="empty-title">Plan your safe trip</div><div class="empty-sub">Enter a destination to see month-by-month disaster risk.<br>Find the safest time to visit.</div></div>
+  </div>
+</div>
+</div>
+<script src="shared.js"></script>
+<script>
+if(!pageInit()){}
+let calData = [];
+function tq(n){document.getElementById('t-loc').value=n;tPredict();}
+async function tPredict(){
+  const loc=getVal('t-loc');if(!loc)return;
+  document.getElementById('t-loading').classList.remove('hidden');
+  document.getElementById('t-results').classList.add('hidden');
+  document.getElementById('t-empty').classList.add('hidden');
+  try{
+    const d=await api('/predict/monthly-calendar',{location:loc});
+    calData=d.calendar||[];
+    setHtml('t-header',d.display_name||loc);
+    setTxt('t-summary',`Safest month: ${d.safest_month} · Riskiest month: ${d.riskiest_month}`);
+    renderCalendar(calData);
+    renderLine(calData);
+    document.getElementById('t-results').classList.remove('hidden');
+  }catch(e){alert(e.message);document.getElementById('t-empty').classList.remove('hidden');}
+  document.getElementById('t-loading').classList.add('hidden');
+}
+function renderCalendar(data){
+  const colors={0:'#34d399',30:'#eab308',50:'#f97316',70:'#ef4444'};
+  document.getElementById('t-calendar').innerHTML=data.map(m=>{
+    const s=m.overall;
+    const bg=s>=70?'rgba(239,68,68,.15)':s>=50?'rgba(249,115,22,.15)':s>=30?'rgba(234,179,8,.12)':'rgba(52,211,153,.1)';
+    const col=s>=70?'#f87171':s>=50?'#fb923c':s>=30?'#facc15':'#34d399';
+    return `<div onclick="showMonthDetail(${m.month-1})" style="background:${bg};border:1px solid ${col}33;border-radius:8px;padding:10px 6px;text-align:center;cursor:pointer;transition:all .15s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:4px">${m.month_name}</div>
+      <div style="font-size:15px;font-weight:700;color:${col}">${m.overall}</div>
+    </div>`;
+  }).join('');
+}
+function renderLine(data){
+  const labels=data.map(m=>m.month_name);
+  const datasets=[
+    {label:'Landslide',data:data.map(m=>m.landslide),borderColor:'#f97316',backgroundColor:'rgba(249,115,22,.1)',tension:.4},
+    {label:'Flood',data:data.map(m=>m.flood),borderColor:'#3b82f6',backgroundColor:'rgba(59,130,246,.1)',tension:.4},
+    {label:'Cyclone',data:data.map(m=>m.cyclone),borderColor:'#a78bfa',backgroundColor:'rgba(167,139,250,.1)',tension:.4},
+    {label:'Drought',data:data.map(m=>m.drought),borderColor:'#fb923c',backgroundColor:'rgba(251,146,60,.1)',tension:.4},
+    {label:'Earthquake',data:data.map(m=>m.earthquake),borderColor:'#f87171',backgroundColor:'rgba(248,113,113,.1)',tension:.4},
+  ];
+  makeChart('t-line',{type:'line',data:{labels,datasets},options:{...CHART_DEFAULTS,scales:{...CHART_DEFAULTS.scales,y:{...CHART_DEFAULTS.scales.y,min:0,max:100}}}});
+}
+function showMonthDetail(idx){
+  const m=calData[idx];if(!m)return;
+  setTxt('t-month-title',`${m.month_name} — Risk Breakdown`);
+  const items=[
+    {name:'Landslide',val:m.landslide,color:'#f97316'},
+    {name:'Flood',val:m.flood,color:'#3b82f6'},
+    {name:'Cyclone',val:m.cyclone,color:'#a78bfa'},
+    {name:'Drought',val:m.drought,color:'#fb923c'},
+    {name:'Earthquake',val:m.earthquake,color:'#f87171'},
+  ];
+  setHtml('t-month-detail',items.map(i=>`
+    <div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+        <span style="color:var(--muted)">${i.name}</span>
+        <span style="color:${i.color};font-weight:600">${i.val}%</span>
+      </div>
+      <div class="bar-wrap"><div style="width:${i.val}%;height:100%;border-radius:100px;background:${i.color}44;transition:width .8s ease"></div></div>
+    </div>`).join(''));
+}
+function logout(){store.del('ds_token');store.del('ds_user');window.location.href='index.html';}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('closed');}
+</script>
+</body></html>
