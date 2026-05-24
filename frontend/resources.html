@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Resource Requests — GeoGuard AI</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+.req-status{display:inline-block;font-size:10px;font-weight:700;padding:2px 9px;border-radius:100px}
+.rs-pending{background:rgba(251,191,36,.15);color:#fbbf24}
+.rs-accepted{background:rgba(74,222,128,.15);color:#4ade80}
+.rs-declined{background:rgba(248,113,113,.15);color:#f87171}
+.rs-completed{background:rgba(96,165,250,.15);color:#60a5fa}
+.req-item{border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;transition:border-color .15s}
+.req-item:hover{border-color:var(--border2)}
+</style>
+</head>
+<body>
+<div class="app">
+
+<nav class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-row"><div class="sb-shield">🛡</div><span class="sb-app-name">GeoGuard</span><span class="sb-ai-badge">AI</span></div>
+    <div class="sb-tagline">Early Warning & Resource Allocation</div>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-section">Prediction</div>
+    <a class="sb-item" href="dashboard.html"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>Dashboard</a>
+    <a class="sb-item" href="map.html"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12 1.586l-4 4v12.828l4-4V1.586zM3.707 3.293A1 1 0 002 4v10a1 1 0 00.293.707L6 18.414V5.586L3.707 3.293zM17.707 5.293L14 1.586v12.828l2.293 2.293A1 1 0 0018 16V6a1 1 0 00-.293-.707z" clip-rule="evenodd"/></svg>Risk Map</a>
+    <a class="sb-item" href="history.html"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 16H15a2 2 0 002-2V5a1 1 0 100-2H3z" clip-rule="evenodd"/></svg>Historical Data</a>
+    <div class="sb-section">Resources</div>
+    <a class="sb-item" href="ngo.html"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/></svg>NGO Portal</a>
+    <a class="sb-item active" id="nav-req" href="resources.html"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5z" clip-rule="evenodd"/></svg>Resource Requests</a>
+  </div>
+  <div class="sb-bottom">
+    <div class="sb-user"><div class="sb-avatar" id="sb-initials">U</div><div><div class="sb-uname" id="sb-name">User</div><div class="sb-uemail" id="sb-email"></div></div></div>
+    <button class="btn-outline" style="width:100%;font-size:12px;padding:8px" onclick="logout()">Sign Out</button>
+  </div>
+</nav>
+
+<div class="main">
+  <div class="topbar">
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+    <div class="tb-title">Resource Requests</div>
+    <div class="tb-right">
+      <button class="notif-btn" onclick="checkNearby(false)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="notif-badge" id="notif-badge"></span>
+      </button>
+      <span class="tb-clock" id="tb-clock"></span>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="ph">
+      <div class="ph-title">Request Emergency Resources</div>
+      <div class="ph-sub">Submit a help request — the nearest verified NGO will be auto-assigned and notified via SMS</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start">
+
+      <!-- Form -->
+      <div class="card">
+        <div class="card-title">New Help Request</div>
+        <div class="form-group">
+          <label class="form-label">Your Location *</label>
+          <div style="display:flex;gap:8px">
+            <input class="form-input" id="rl-loc" placeholder="City, district..." style="flex:1">
+            <button class="btn-outline btn-sm" onclick="getMyLoc()" style="padding:11px 12px">📍</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Disaster Type *</label>
+            <select class="form-select" id="rl-dis">
+              <option value="">Select</option>
+              <option>Landslide</option><option>Flood</option><option>Cyclone</option>
+              <option>Earthquake</option><option>Drought</option><option>Other Emergency</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">Severity *</label>
+            <select class="form-select" id="rl-sev">
+              <option value="">Select</option>
+              <option value="critical">Critical — Life threatening</option>
+              <option value="high">High — Urgent help needed</option>
+              <option value="medium">Medium — Important but stable</option>
+              <option value="low">Low — Planning stage</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">People Affected</label><input class="form-input" id="rl-ppl" type="number" min="0" placeholder="Number of people"></div>
+          <div class="form-group"><label class="form-label">Your Phone (for SMS updates)</label><input class="form-input" id="rl-ph" type="tel" placeholder="+91 XXXXXXXXXX"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Resources Needed *</label><input class="form-input" id="rl-res" placeholder="Food, medicines, rescue team, boats..."></div>
+        <div class="form-group"><label class="form-label">Additional Details</label>
+          <textarea class="form-input" id="rl-desc" rows="3" placeholder="Describe the situation..." style="resize:vertical"></textarea>
+        </div>
+        <button class="btn-primary" onclick="submitReq()" id="rl-btn" style="width:100%;justify-content:center">Submit Help Request</button>
+        <div id="rl-msg" style="display:none"></div>
+        <div class="msg-info" style="display:block;margin-top:12px;font-size:12px">
+          The nearest verified NGO will be automatically notified via SMS and will respond within 30 minutes.
+        </div>
+      </div>
+
+      <!-- My Requests -->
+      <div class="card">
+        <div class="card-title">My Previous Requests</div>
+        <div class="loading" id="rl-loading"><div class="spinner"></div></div>
+        <div id="rl-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script src="shared.js"></script>
+<script>
+if (!pageInit('nav-req')) {}
+else { startNearbyMonitor(); loadMyReqs(); }
+
+let myLat = null, myLon = null;
+
+async function getMyLoc() {
+  try {
+    const pos = await getGPS();
+    myLat = pos.lat; myLon = pos.lon;
+    const city = await reverseGeocode(pos.lat, pos.lon);
+    document.getElementById('rl-loc').value = city;
+  } catch(e) { alert(e.message); }
+}
+
+async function submitReq() {
+  const location  = val('rl-loc');
+  const disaster  = document.getElementById('rl-dis').value;
+  const severity  = document.getElementById('rl-sev').value;
+  const resources = val('rl-res');
+  const phone     = val('rl-ph') || null;
+  if (!location||!disaster||!severity||!resources)
+    return showMsg('rl-msg','Fill all required fields (*)','error');
+
+  dis('rl-btn');
+  try {
+    const d = await api('/requests/create', {
+      location, lat: myLat, lon: myLon,
+      disaster_type:    disaster,
+      severity,
+      people_affected:  parseInt(el('rl-ppl')?.value)||0,
+      resources_needed: resources,
+      description:      val('rl-desc'),
+      phone,
+    });
+    showMsg('rl-msg', d.message + (d.ngo_name ? ` Assigned to: ${d.ngo_name}` : ''), 'success');
+    document.getElementById('rl-btn').innerHTML = '✓ Submitted';
+    setTimeout(loadMyReqs, 1000);
+  } catch(e) { showMsg('rl-msg', e.message, 'error'); }
+  ena('rl-btn');
+}
+
+async function loadMyReqs() {
+  show('rl-loading');
+  try {
+    const d = await api('/requests/my', null, 'GET');
+    const reqs = d.requests || [];
+    const SC_MAP = {pending:'rs-pending',accepted:'rs-accepted',declined:'rs-declined',completed:'rs-completed'};
+    html('rl-list', reqs.length === 0
+      ? '<div style="color:var(--muted);font-size:13px;padding:20px 0;text-align:center">No requests yet</div>'
+      : reqs.map(r=>`
+        <div class="req-item">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <div style="font-weight:600;font-size:13px">${r.location}</div>
+            <span class="req-status ${SC_MAP[r.status]||'rs-pending'}">${r.status.toUpperCase()}</span>
+            <span class="badge badge-${r.severity==='critical'||r.severity==='high'?'HIGH':'MEDIUM'}">${r.severity}</span>
+            <span style="font-size:11px;color:var(--muted);margin-left:auto">${r.created_at?.split('T')[0]}</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:4px">${r.disaster_type} · ${r.people_affected} people affected</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:6px">Needs: ${r.resources_needed}</div>
+          ${r.ngo_name?`<div style="font-size:12px;color:var(--green)">NGO: ${r.ngo_name}${r.ngo_phone?' · 📞 '+r.ngo_phone:''}</div>`:`<div style="font-size:12px;color:var(--muted)">⏳ Awaiting NGO assignment...</div>`}
+          ${r.ngo_response?`<div style="font-size:12px;color:var(--muted);margin-top:6px;padding:8px;background:rgba(255,255,255,.02);border-radius:6px">NGO Response: ${r.ngo_response}</div>`:''}
+        </div>`).join('')
+    );
+  } catch(e) {}
+  hide('rl-loading');
+}
+</script>
+</body>
+</html>

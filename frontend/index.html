@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GeoGuard AI — Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#050a08;--card:#0a1410;--card2:#0f1c16;
+  --border:#162b1e;--border2:#1e3d2a;
+  --text:#e8f5ee;--muted:#5a8068;--muted2:#3d5c4a;
+  --green:#4ade80;--green2:#22c55e;--green3:#16a34a;
+  --red:#f87171;--orange:#fb923c;--yellow:#fbbf24;
+  --blue:#60a5fa;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
+
+/* Background animated blobs */
+.bg-blobs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.blob{position:absolute;border-radius:50%;filter:blur(80px);opacity:.12;animation:blobmove 12s ease-in-out infinite}
+.blob1{width:400px;height:400px;background:#4ade80;top:-100px;left:-100px;animation-delay:0s}
+.blob2{width:300px;height:300px;background:#22c55e;bottom:-80px;right:-80px;animation-delay:-4s}
+.blob3{width:200px;height:200px;background:#16a34a;top:40%;left:60%;animation-delay:-8s}
+@keyframes blobmove{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-20px) scale(1.05)}66%{transform:translate(-20px,30px) scale(.95)}}
+
+/* Grid pattern */
+.bg-grid{position:fixed;inset:0;z-index:0;opacity:.04;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:40px 40px}
+
+/* ── SCREENS ── */
+.screen{display:none;position:relative;z-index:1;width:100%;max-width:460px;padding:20px}
+.screen.active{display:block}
+
+/* ── AUTH CARD ── */
+.auth-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:38px 36px;
+  box-shadow:0 24px 80px rgba(0,0,0,.5);
+  position:relative;
+  overflow:hidden;
+}
+.auth-card::before{
+  content:'';position:absolute;inset:0;border-radius:20px;
+  background:linear-gradient(135deg,rgba(74,222,128,.05) 0%,transparent 60%);
+  pointer-events:none;
+}
+
+/* Logo */
+.logo{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.logo-shield{
+  width:40px;height:40px;border-radius:10px;
+  background:linear-gradient(135deg,rgba(74,222,128,.2),rgba(34,197,94,.1));
+  border:1px solid rgba(74,222,128,.3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;flex-shrink:0;
+}
+.logo-text{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;color:var(--green)}
+.logo-ai{font-size:10px;background:rgba(74,222,128,.15);color:var(--green);border:1px solid rgba(74,222,128,.3);padding:1px 6px;border-radius:4px;margin-left:2px;vertical-align:middle;font-weight:600;letter-spacing:.04em}
+.tagline{font-size:12px;color:var(--muted);margin-bottom:28px;padding-left:52px}
+
+.screen-title{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;margin-bottom:20px}
+.screen-sub{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.6}
+
+/* Form */
+.form-group{margin-bottom:14px}
+.form-label{font-size:11px;color:var(--muted);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.06em;font-weight:500}
+.form-input{
+  width:100%;background:rgba(255,255,255,.03);
+  border:1px solid var(--border);border-radius:10px;
+  padding:12px 14px;font-size:14px;color:var(--text);
+  font-family:'Inter',sans-serif;outline:none;transition:all .2s;
+}
+.form-input:focus{border-color:rgba(74,222,128,.4);background:rgba(74,222,128,.03)}
+.form-input::placeholder{color:var(--muted2)}
+
+/* Role selection */
+.role-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.role-card{
+  border:1.5px solid var(--border);border-radius:10px;
+  padding:12px;cursor:pointer;transition:all .2s;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  background:rgba(255,255,255,.02);
+}
+.role-card:hover{border-color:rgba(74,222,128,.3)}
+.role-card.selected{border-color:var(--green);background:rgba(74,222,128,.08)}
+.role-icon{font-size:22px}
+.role-name{font-size:12px;font-weight:600;color:var(--text)}
+.role-desc{font-size:10px;color:var(--muted);text-align:center;line-height:1.4}
+
+/* Buttons */
+.btn{
+  width:100%;background:var(--green);color:#000;border:none;
+  border-radius:10px;padding:13px;font-size:14px;font-weight:700;
+  cursor:pointer;font-family:'Space Grotesk',sans-serif;
+  transition:all .2s;margin-top:6px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-ghost{
+  width:100%;background:transparent;color:var(--muted);
+  border:1px solid var(--border);border-radius:10px;padding:11px;
+  font-size:13px;cursor:pointer;transition:all .2s;margin-top:8px;
+}
+.btn-ghost:hover{border-color:rgba(74,222,128,.3);color:var(--green)}
+
+/* Messages */
+.msg{border-radius:8px;padding:10px 14px;font-size:13px;margin-top:12px;display:none;line-height:1.5}
+.msg.success{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3);color:var(--green)}
+.msg.error{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);color:var(--red)}
+.msg.info{background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.3);color:var(--blue)}
+
+/* Switch */
+.switch{text-align:center;margin-top:18px;font-size:13px;color:var(--muted)}
+.switch a{color:var(--green);cursor:pointer;text-decoration:none;font-weight:500}
+.switch a:hover{text-decoration:underline}
+
+/* OTP */
+.otp-row{display:flex;gap:10px;justify-content:center;margin:20px 0}
+.otp-inp{
+  width:50px;height:56px;text-align:center;font-size:24px;font-weight:700;
+  background:rgba(255,255,255,.04);border:1.5px solid var(--border);
+  border-radius:10px;color:var(--text);font-family:'Space Grotesk',sans-serif;
+  outline:none;transition:all .2s;
+}
+.otp-inp:focus{border-color:var(--green);background:rgba(74,222,128,.05)}
+.otp-email{font-weight:600;color:var(--text)}
+
+.divider{display:flex;align-items:center;gap:10px;margin:16px 0;color:var(--muted2);font-size:12px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* Form row */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* Dev mode notice */
+.dev-note{
+  background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);
+  border-radius:8px;padding:8px 12px;font-size:11px;color:var(--yellow);
+  text-align:center;margin-top:12px;line-height:1.5;
+}
+
+@media(max-width:500px){
+  .auth-card{padding:28px 22px}
+  .form-row{grid-template-columns:1fr}
+  .screen{padding:12px}
+}
+
+/* Light mode visual tweaks */
+body.light input, body.light select, body.light textarea {
+  background: #f9fafb !important;
+  color: #064e3b !important;
+}
+body.light .sidebar { box-shadow: 2px 0 12px rgba(0,0,0,.08); }
+body.light .topbar  { box-shadow: 0 1px 8px rgba(0,0,0,.06); }
+body.light .d-card:hover, body.light .card:hover { border-color: #a7f3d0; }
+body.light table th { border-color: #d1fae5; }
+body.light table td { border-color: rgba(0,0,0,.06); }
+
+</style>
+<script src="theme.js"></script>
+</head>
+<body>
+<button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle theme"
+  style="position:fixed;top:16px;right:16px;z-index:999;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:8px 12px;cursor:pointer;font-size:16px;line-height:1;backdrop-filter:blur(10px)">🌙</button>
+<div class="bg-blobs"><div class="blob blob1"></div><div class="blob blob2"></div><div class="blob blob3"></div></div>
+<div class="bg-grid"></div>
+
+<!-- ═══ LOGIN ═══ -->
+<div class="screen active" id="s-login">
+  <div class="auth-card">
+    <div class="logo">
+      <div class="logo-shield">🛡</div>
+      <div>
+        <span class="logo-text">GeoGuard</span>
+        <span class="logo-ai">AI</span>
+      </div>
+    </div>
+    <div class="tagline">AI Enhanced Early Disaster Warning & Resource Allocation</div>
+
+    <div class="screen-title">Welcome back</div>
+
+    <div class="form-group">
+      <label class="form-label">Email Address</label>
+      <input class="form-input" id="l-email" type="email" placeholder="you@example.com" autocomplete="email">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input class="form-input" id="l-pass" type="password" placeholder="Your password"
+             onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+
+    <button class="btn" id="l-btn" onclick="doLogin()">
+      <span>Sign In</span>
+    </button>
+    <div class="msg" id="l-msg"></div>
+
+    <div class="divider">or</div>
+
+    <button class="btn-ghost" onclick="show('s-register')">Create new account</button>
+
+    <div class="switch" style="margin-top:14px">
+      <a onclick="show('s-register')">Register as NGO / Organization?</a>
+    </div>
+
+    <div class="dev-note">
+      Dev mode: OTP is printed in the backend terminal window.
+    </div>
+  </div>
+</div>
+
+<!-- ═══ REGISTER ═══ -->
+<div class="screen" id="s-register">
+  <div class="auth-card">
+    <div class="logo">
+      <div class="logo-shield">🛡</div>
+      <div><span class="logo-text">GeoGuard</span><span class="logo-ai">AI</span></div>
+    </div>
+    <div class="tagline">Create your account</div>
+
+    <div class="screen-title">Get started</div>
+
+    <!-- Role Selection -->
+    <div style="margin-bottom:14px">
+      <div class="form-label" style="margin-bottom:8px">I am registering as</div>
+      <div class="role-row">
+        <div class="role-card selected" id="role-user" onclick="selectRole('user')">
+          <span class="role-icon">👤</span>
+          <span class="role-name">Regular User</span>
+          <span class="role-desc">Access predictions & alerts</span>
+        </div>
+        <div class="role-card" id="role-ngo" onclick="selectRole('ngo')">
+          <span class="role-icon">🏥</span>
+          <span class="role-name">NGO / Organization</span>
+          <span class="role-desc">Provide resources & relief</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Full Name *</label>
+      <input class="form-input" id="r-name" type="text" placeholder="Your full name">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email Address *</label>
+      <input class="form-input" id="r-email" type="email" placeholder="you@example.com">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Password *</label>
+        <input class="form-input" id="r-pass" type="password" placeholder="Min 6 chars">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone</label>
+        <input class="form-input" id="r-phone" type="tel" placeholder="+91 XXXXXXXXXX">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">City</label>
+      <input class="form-input" id="r-city" type="text" placeholder="e.g. Dehradun">
+    </div>
+
+    <button class="btn" id="r-btn" onclick="doRegister()">Create Account</button>
+    <div class="msg" id="r-msg"></div>
+    <button class="btn-ghost" onclick="show('s-login')">← Back to Login</button>
+  </div>
+</div>
+
+<!-- ═══ OTP ═══ -->
+<div class="screen" id="s-otp">
+  <div class="auth-card">
+    <div class="logo">
+      <div class="logo-shield">🛡</div>
+      <div><span class="logo-text">GeoGuard</span><span class="logo-ai">AI</span></div>
+    </div>
+    <div class="tagline">Email verification</div>
+
+    <div class="screen-title">Enter OTP</div>
+    <div class="screen-sub">
+      Code sent to <span class="otp-email" id="otp-email-show"></span>
+    </div>
+
+    <!-- DEV MODE: Show OTP on screen -->
+    <div id="otp-dev-box" style="display:none;background:rgba(74,222,128,.08);border:1.5px dashed rgba(74,222,128,.4);border-radius:12px;padding:16px;text-align:center;margin-bottom:16px">
+      <div style="font-size:11px;color:#5a8068;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Your OTP Code</div>
+      <div id="otp-dev-code" style="font-size:36px;font-weight:800;letter-spacing:10px;color:#4ade80;font-family:'Space Grotesk',sans-serif"></div>
+      <div style="font-size:11px;color:#3d5c4a;margin-top:8px">Email not configured — OTP shown here</div>
+      <button onclick="autoFillOTP()" style="margin-top:10px;background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.3);color:#4ade80;border-radius:8px;padding:6px 16px;font-size:12px;cursor:pointer;font-weight:600">Auto-Fill OTP ↓</button>
+    </div>
+
+    <div class="otp-row">
+      <input class="otp-inp" id="otp0" maxlength="1" oninput="otpNext(0)" onkeydown="otpKey(event,0)">
+      <input class="otp-inp" id="otp1" maxlength="1" oninput="otpNext(1)" onkeydown="otpKey(event,1)">
+      <input class="otp-inp" id="otp2" maxlength="1" oninput="otpNext(2)" onkeydown="otpKey(event,2)">
+      <input class="otp-inp" id="otp3" maxlength="1" oninput="otpNext(3)" onkeydown="otpKey(event,3)">
+      <input class="otp-inp" id="otp4" maxlength="1" oninput="otpNext(4)" onkeydown="otpKey(event,4)">
+      <input class="otp-inp" id="otp5" maxlength="1" oninput="otpNext(5)" onkeydown="otpKey(event,5)">
+    </div>
+
+    <button class="btn" onclick="doVerifyOTP()">Verify & Continue →</button>
+    <button class="btn-ghost" onclick="doResendOTP()">Resend OTP</button>
+    <div class="msg" id="otp-msg"></div>
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:8000';
+let pendingEmail = '';
+let selectedRole = 'user';
+
+// Auto-redirect if already logged in
+if (localStorage.getItem('gg_token') && localStorage.getItem('gg_user')) {
+  window.location.href = 'dashboard.html';
+}
+
+function show(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(screenId).classList.add('active');
+  // When OTP screen opens, try to fetch OTP for dev display
+  if (screenId === 's-otp' && pendingEmail) {
+    fetchDevOTP(pendingEmail);
+  }
+}
+
+async function fetchDevOTP(email) {
+  try {
+    const res  = await fetch(API + '/dev/otp/' + encodeURIComponent(email));
+    const data = await res.json();
+    if (res.ok && data.otp) {
+      const box  = document.getElementById('otp-dev-box');
+      const code = document.getElementById('otp-dev-code');
+      if (box && code) {
+        code.textContent = data.otp;
+        box.style.display = 'block';
+      }
+    }
+  } catch(e) {
+    // Silent — email might be configured so no dev OTP shown
+  }
+}
+
+function autoFillOTP() {
+  const code = document.getElementById('otp-dev-code')?.textContent?.trim();
+  if (!code || code.length !== 6) return;
+  for (let i = 0; i < 6; i++) {
+    const inp = document.getElementById('otp' + i);
+    if (inp) inp.value = code[i];
+  }
+  // Auto verify
+  doVerifyOTP();
+}
+
+function showMsg(id, text, type) {
+  const el = document.getElementById(id);
+  el.className = 'msg ' + type;
+  el.textContent = text;
+  el.style.display = 'block';
+}
+
+function selectRole(role) {
+  selectedRole = role;
+  document.getElementById('role-user').classList.toggle('selected', role === 'user');
+  document.getElementById('role-ngo').classList.toggle('selected', role === 'ngo');
+}
+
+// ── LOGIN ──────────────────────────────────────────────
+async function doLogin() {
+  const email = document.getElementById('l-email').value.trim();
+  const pass  = document.getElementById('l-pass').value;
+  if (!email || !pass) return showMsg('l-msg', 'Please fill all fields', 'error');
+
+  const btn = document.getElementById('l-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span style="opacity:.6">Signing in...</span>';
+
+  try {
+    const res  = await fetch(API + '/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password: pass })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      if (data.detail && data.detail.includes('not verified')) {
+        pendingEmail = email;
+        document.getElementById('otp-email-show').textContent = email;
+        show('s-otp');
+        setTimeout(() => fetchDevOTP(email), 500);
+      } else {
+        showMsg('l-msg', data.detail || 'Login failed', 'error');
+      }
+      return;
+    }
+    localStorage.setItem('gg_token', data.token);
+    localStorage.setItem('gg_user',  JSON.stringify(data.user));
+    // Redirect NGO users to NGO portal, others to dashboard
+    window.location.href = data.user.role === 'ngo_pending' ? 'ngo.html' : 'dashboard.html';
+  } catch(e) {
+    showMsg('l-msg', 'Cannot connect to server. Is backend running on port 8000?', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span>Sign In</span>';
+  }
+}
+
+// ── REGISTER ───────────────────────────────────────────
+async function doRegister() {
+  const name  = document.getElementById('r-name').value.trim();
+  const email = document.getElementById('r-email').value.trim();
+  const pass  = document.getElementById('r-pass').value;
+  const phone = document.getElementById('r-phone').value.trim();
+  const city  = document.getElementById('r-city').value.trim();
+
+  if (!name || !email || !pass) return showMsg('r-msg', 'Fill required fields (*)', 'error');
+  if (pass.length < 6)          return showMsg('r-msg', 'Password must be 6+ characters', 'error');
+
+  const btn = document.getElementById('r-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span style="opacity:.6">Creating account...</span>';
+
+  try {
+    const res  = await fetch(API + '/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password: pass, phone: phone || null, city: city || null })
+    });
+    const data = await res.json();
+    if (!res.ok) { showMsg('r-msg', data.detail || 'Registration failed', 'error'); return; }
+
+    pendingEmail = email;
+    document.getElementById('otp-email-show').textContent = email;
+    showMsg('r-msg', data.message, 'success');
+    setTimeout(() => {
+      show('s-otp');
+      document.getElementById('otp-email-show').textContent = email;
+    }, 800);
+  } catch(e) {
+    showMsg('r-msg', 'Cannot connect to server. Is backend running?', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span>Create Account</span>';
+  }
+}
+
+// ── OTP ────────────────────────────────────────────────
+function otpNext(i) {
+  if (document.getElementById('otp'+i).value && i < 5)
+    document.getElementById('otp'+(i+1)).focus();
+}
+function otpKey(e, i) {
+  if (e.key === 'Backspace' && !document.getElementById('otp'+i).value && i > 0)
+    document.getElementById('otp'+(i-1)).focus();
+  if (e.key === 'Enter') doVerifyOTP();
+}
+function getOTP() {
+  return [0,1,2,3,4,5].map(i => document.getElementById('otp'+i).value).join('');
+}
+
+async function doVerifyOTP() {
+  const otp = getOTP();
+  if (otp.length < 6) return showMsg('otp-msg', 'Enter complete 6-digit OTP', 'error');
+  try {
+    const res  = await fetch(API + '/auth/verify-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: pendingEmail, otp })
+    });
+    const data = await res.json();
+    if (!res.ok) { showMsg('otp-msg', data.detail || 'Invalid OTP', 'error'); return; }
+    localStorage.setItem('gg_token', data.token);
+    localStorage.setItem('gg_user',  JSON.stringify(data.user));
+    showMsg('otp-msg', 'Verified! Redirecting...', 'success');
+    // If they registered as NGO, go to NGO portal to complete registration
+    setTimeout(() => {
+      window.location.href = selectedRole === 'ngo' ? 'ngo.html' : 'dashboard.html';
+    }, 800);
+  } catch(e) {
+    showMsg('otp-msg', 'Server error. Try again.', 'error');
+  }
+}
+
+async function doResendOTP() {
+  if (!pendingEmail) return;
+  try {
+    const res  = await fetch(API + '/auth/resend-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: pendingEmail })
+    });
+    const data = await res.json();
+    showMsg('otp-msg', data.message, res.ok ? 'success' : 'error');
+    if (res.ok) {
+      // Clear old OTP boxes
+      [0,1,2,3,4,5].forEach(i => { const inp = document.getElementById('otp'+i); if(inp) inp.value = ''; });
+      document.getElementById('otp-dev-box').style.display = 'none';
+      setTimeout(() => fetchDevOTP(pendingEmail), 600);
+    }
+  } catch(e) { showMsg('otp-msg', 'Server error.', 'error'); }
+}
+</script>
+</body>
+</html>

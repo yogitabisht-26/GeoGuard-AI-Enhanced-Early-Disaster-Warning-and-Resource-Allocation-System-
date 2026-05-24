@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NGO Portal — GeoGuard AI</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+.tabs{display:flex;gap:4px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:4px;width:fit-content;margin-bottom:20px}
+.tab{background:none;border:none;padding:8px 16px;border-radius:9px;font-size:13px;cursor:pointer;color:var(--muted);transition:all .15s;font-family:'Inter',sans-serif}
+.tab.active{background:rgba(74,222,128,.12);color:var(--green);font-weight:600}
+.resource-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px}
+.resource-row:last-child{border-bottom:none}
+.req-card{border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;transition:border-color .15s}
+.req-card:hover{border-color:var(--border2)}
+.status-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 9px;border-radius:100px}
+.st-pending{background:rgba(251,191,36,.15);color:var(--yellow)}
+.st-accepted{background:rgba(74,222,128,.15);color:var(--green)}
+.st-declined{background:rgba(248,113,113,.15);color:var(--red)}
+.st-completed{background:rgba(96,165,250,.15);color:var(--blue)}
+.ngo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.ngo-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;transition:border-color .2s}
+.ngo-card:hover{border-color:var(--border2)}
+</style>
+</head>
+<body>
+<div class="app">
+
+<nav class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-row"><div class="sb-shield">🛡</div><span class="sb-app-name">GeoGuard</span><span class="sb-ai-badge">AI</span></div>
+    <div class="sb-tagline">Early Warning & Resource Allocation</div>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-section">Prediction</div>
+    <a class="sb-item" href="dashboard.html"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>Dashboard</a>
+    <a class="sb-item" href="map.html"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12 1.586l-4 4v12.828l4-4V1.586zM3.707 3.293A1 1 0 002 4v10a1 1 0 00.293.707L6 18.414V5.586L3.707 3.293zM17.707 5.293L14 1.586v12.828l2.293 2.293A1 1 0 0018 16V6a1 1 0 00-.293-.707z" clip-rule="evenodd"/></svg>Risk Map</a>
+    <a class="sb-item" href="history.html"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 16H15a2 2 0 002-2V5a1 1 0 100-2H3z" clip-rule="evenodd"/></svg>Historical Data</a>
+    <div class="sb-section">Resources</div>
+    <a class="sb-item active" id="nav-ngo" href="ngo.html"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/></svg>NGO Portal</a>
+    <a class="sb-item" href="resources.html"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5z" clip-rule="evenodd"/></svg>Resource Requests</a>
+  </div>
+  <div class="sb-bottom">
+    <div class="sb-user"><div class="sb-avatar" id="sb-initials">U</div><div><div class="sb-uname" id="sb-name">User</div><div class="sb-uemail" id="sb-email"></div></div></div>
+    <button class="btn-outline" style="width:100%;font-size:12px;padding:8px" onclick="logout()">Sign Out</button>
+  </div>
+</nav>
+
+<div class="main">
+  <div class="topbar">
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+    <div class="tb-title">NGO Portal</div>
+    <div class="tb-right">
+      <button class="notif-btn" onclick="checkNearby(false)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="notif-badge" id="notif-badge"></span>
+      </button>
+      <span class="tb-clock" id="tb-clock"></span>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="ph">
+      <div class="ph-title">NGO & Organization Portal</div>
+      <div class="ph-sub">Register your NGO, manage resources, and handle disaster relief requests</div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab active" id="t-reg" onclick="showTab('register')">Register NGO</button>
+      <button class="tab" id="t-prof" onclick="showTab('profile')">My NGO Profile</button>
+      <button class="tab" id="t-list" onclick="showTab('list')">All NGOs</button>
+    </div>
+
+    <!-- ── REGISTER ── -->
+    <div id="tab-register">
+      <div class="card" style="max-width:680px">
+        <div class="card-title">Register Your Organization</div>
+        <div class="msg-info" style="display:block;margin-bottom:16px">After registration, admin will verify within 24 hours.</div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Organization Name *</label><input class="form-input" id="n-name" placeholder="e.g. Red Cross India"></div>
+          <div class="form-group"><label class="form-label">Organization Type *</label>
+            <select class="form-select" id="n-type">
+              <option value="">Select type</option>
+              <option>Disaster Relief NGO</option><option>Medical Organization</option>
+              <option>Search & Rescue</option><option>Food & Shelter</option>
+              <option>Government Body</option><option>Community Organization</option><option>Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Registration Number *</label><input class="form-input" id="n-reg" placeholder="NGO/2020/XXXXX"></div>
+          <div class="form-group"><label class="form-label">Phone *</label><input class="form-input" id="n-phone" placeholder="+91 XXXXXXXXXX"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Address</label><input class="form-input" id="n-addr" placeholder="Full address"></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">City *</label><input class="form-input" id="n-city" placeholder="Dehradun"></div>
+          <div class="form-group"><label class="form-label">State *</label><input class="form-input" id="n-state" placeholder="Uttarakhand"></div>
+          <div class="form-group"><label class="form-label">Pincode</label><input class="form-input" id="n-pin" placeholder="248001"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Website</label><input class="form-input" id="n-web" placeholder="https://example.org"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Description</label>
+          <textarea class="form-input" id="n-desc" rows="3" placeholder="What does your org do? What disasters do you help with?" style="resize:vertical"></textarea>
+        </div>
+        <button class="btn-primary" onclick="regNGO()" id="n-btn" style="width:100%;justify-content:center">Submit Registration</button>
+        <div id="n-msg" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- ── PROFILE ── -->
+    <div id="tab-profile" class="hidden">
+      <div class="loading" id="prof-loading"><div class="spinner"></div><div class="loading-text">Loading...</div></div>
+      <div id="prof-content" class="hidden">
+        <div class="card" style="margin-bottom:16px" id="ngo-info"></div>
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-title">Your Resources</div>
+          <div id="res-list"></div>
+          <div style="border-top:1px solid var(--border);padding-top:16px;margin-top:16px">
+            <div style="font-size:13px;font-weight:600;margin-bottom:12px">Add New Resource</div>
+            <div class="form-row" style="grid-template-columns:1fr 1fr 80px 80px">
+              <div class="form-group"><label class="form-label">Type</label>
+                <select class="form-select" id="r-type">
+                  <option>Medical Supplies</option><option>Food & Water</option>
+                  <option>Shelter</option><option>Rescue Equipment</option>
+                  <option>Vehicles</option><option>Volunteers</option><option>Other</option>
+                </select>
+              </div>
+              <div class="form-group"><label class="form-label">Name</label><input class="form-input" id="r-name" placeholder="e.g. Ambulances"></div>
+              <div class="form-group"><label class="form-label">Total</label><input class="form-input" id="r-qty" type="number" min="0" placeholder="10"></div>
+              <div class="form-group"><label class="form-label">Avail.</label><input class="form-input" id="r-avail" type="number" min="0" placeholder="8"></div>
+            </div>
+            <div class="form-row" style="grid-template-columns:100px 1fr">
+              <div class="form-group"><label class="form-label">Unit</label><input class="form-input" id="r-unit" placeholder="units"></div>
+              <div class="form-group"><label class="form-label">Description</label><input class="form-input" id="r-desc" placeholder="Optional details"></div>
+            </div>
+            <button class="btn-primary btn-sm" onclick="addRes()">Add Resource</button>
+            <div id="r-msg" style="display:none"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Incoming Resource Requests</div>
+          <div id="ngo-reqs"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ALL NGOs ── -->
+    <div id="tab-list" class="hidden">
+      <div class="loading" id="list-loading"><div class="spinner"></div><div class="loading-text">Loading NGOs...</div></div>
+      <div id="ngo-grid" class="ngo-grid hidden"></div>
+    </div>
+
+  </div>
+</div>
+</div>
+<script src="shared.js"></script>
+<script>
+if (!pageInit('nav-ngo')) {}
+else startNearbyMonitor();
+
+function showTab(t) {
+  ['register','profile','list'].forEach(x => {
+    document.getElementById('tab-'+x).classList.toggle('hidden', x!==t);
+    document.getElementById('t-'+x.slice(0,3)).classList.toggle('active', x===t);
+  });
+  if (t==='profile') loadProfile();
+  if (t==='list')    loadAllNGOs();
+}
+// Fix tab id for 'register' -> 't-reg', 'profile' -> 't-prof', 'list' -> 't-list'
+function showTab(t) {
+  document.getElementById('tab-register').classList.toggle('hidden', t!=='register');
+  document.getElementById('tab-profile').classList.toggle('hidden', t!=='profile');
+  document.getElementById('tab-list').classList.toggle('hidden', t!=='list');
+  document.getElementById('t-reg').classList.toggle('active', t==='register');
+  document.getElementById('t-prof').classList.toggle('active', t==='profile');
+  document.getElementById('t-list').classList.toggle('active', t==='list');
+  if (t==='profile') loadProfile();
+  if (t==='list')    loadAllNGOs();
+}
+
+async function regNGO() {
+  const payload = {
+    org_name:        val('n-name'), org_type: document.getElementById('n-type').value,
+    registration_no: val('n-reg'), phone:    val('n-phone'),
+    address:         val('n-addr'), city:    val('n-city'),
+    state:           val('n-state'), pincode: val('n-pin'),
+    website:         val('n-web'), description: val('n-desc'),
+  };
+  if (!payload.org_name||!payload.org_type||!payload.registration_no||!payload.phone||!payload.city||!payload.state)
+    return showMsg('n-msg','Fill all required fields (*)','error');
+  dis('n-btn');
+  try {
+    const d = await api('/ngo/register', payload);
+    showMsg('n-msg', d.message, 'success');
+  } catch(e) { showMsg('n-msg', e.message, 'error'); }
+  ena('n-btn');
+}
+
+async function loadProfile() {
+  show('prof-loading'); hide('prof-content');
+  try {
+    const d = await api('/ngo/my-profile', null, 'GET');
+    const n = d.ngo;
+    const stCol = n.is_verified ? '#4ade80' : '#fbbf24';
+    const stTxt = n.is_verified ? 'Verified' : 'Pending Verification';
+    html('ngo-info', `
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:800;margin-bottom:4px">${n.org_name}</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:8px">${n.org_type} · ${n.city}, ${n.state}</div>
+      <span style="font-size:11px;font-weight:700;padding:2px 10px;border-radius:100px;background:${stCol}22;color:${stCol}">${stTxt}</span>
+      <div style="font-size:13px;color:var(--muted);margin-top:10px">Reg: ${n.registration_no} · 📞 ${n.phone}</div>
+      ${n.description?`<div style="font-size:13px;color:var(--muted);margin-top:8px;line-height:1.5">${n.description}</div>`:''}
+    `);
+    // Resources
+    const rl = d.resources || [];
+    html('res-list', rl.length === 0
+      ? '<div style="color:var(--muted);font-size:13px;padding:10px 0">No resources added yet.</div>'
+      : '<div class="table-wrap"><table><thead><tr><th>Type</th><th>Name</th><th>Total</th><th>Available</th><th>Unit</th></tr></thead><tbody>' +
+        rl.map(r=>`<tr><td style="color:var(--muted)">${r.resource_type}</td><td>${r.resource_name}</td><td style="color:var(--green);font-weight:600">${r.quantity}</td><td style="color:${r.available>0?'var(--green)':'var(--red)'};font-weight:600">${r.available}</td><td style="color:var(--muted)">${r.unit}</td></tr>`).join('') +
+        '</tbody></table></div>'
+    );
+    // Incoming requests
+    const reqs = d.requests || [];
+    const SC = {pending:'st-pending',accepted:'st-accepted',declined:'st-declined',completed:'st-completed'};
+    html('ngo-reqs', reqs.length === 0
+      ? '<div style="color:var(--muted);font-size:13px;padding:10px 0">No incoming requests yet.</div>'
+      : reqs.map(r=>`
+        <div class="req-card">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <div style="font-weight:600;font-size:13px">${r.location}</div>
+            <span class="status-badge ${SC[r.status]||'st-pending'}">${r.status.toUpperCase()}</span>
+            <span class="badge badge-${r.severity==='critical'?'HIGH':r.severity==='high'?'HIGH':'MEDIUM'}">${r.severity}</span>
+            <span style="font-size:11px;color:var(--muted);margin-left:auto">${r.created_at?.split('T')[0]}</span>
+          </div>
+          <div style="font-size:13px;color:var(--muted);margin-bottom:6px">${r.disaster_type} · ${r.people_affected} people · Needs: ${r.resources_needed}</div>
+          ${r.description?`<div style="font-size:12px;color:var(--muted2);margin-bottom:8px">${r.description}</div>`:''}
+          ${r.status==='pending'?`
+            <div style="display:flex;gap:8px">
+              <button class="btn-primary btn-sm" onclick="respond(${r.id},'accepted','We will help you!')">Accept</button>
+              <button class="btn-outline btn-sm" onclick="respond(${r.id},'declined','Unable to help at this time.')" style="color:var(--red);border-color:rgba(248,113,113,.3)">Decline</button>
+            </div>`:''}
+        </div>`).join('')
+    );
+    hide('prof-loading');
+    document.getElementById('prof-content').classList.remove('hidden');
+    document.getElementById('prof-content').style.display = 'block';
+  } catch(e) {
+    hide('prof-loading');
+    html('prof-content', `<div class="msg-err" style="display:block">${e.message.includes('Register')||e.message.includes('not found')?'You have not registered an NGO yet. Use the Register tab.':e.message}</div>`);
+    document.getElementById('prof-content').classList.remove('hidden');
+    document.getElementById('prof-content').style.display = 'block';
+  }
+}
+
+async function addRes() {
+  const payload = {
+    resource_type: document.getElementById('r-type').value,
+    resource_name: val('r-name'),
+    quantity:      parseInt(el('r-qty')?.value)||0,
+    available:     parseInt(el('r-avail')?.value)||0,
+    unit:          val('r-unit')||'units',
+    description:   val('r-desc'),
+  };
+  if (!payload.resource_name) return showMsg('r-msg','Enter resource name','error');
+  try {
+    const d = await api('/ngo/add-resource', payload);
+    showMsg('r-msg', d.message, 'success');
+    setTimeout(loadProfile, 800);
+  } catch(e) { showMsg('r-msg', e.message, 'error'); }
+}
+
+async function respond(id, status, msg) {
+  try {
+    await api(`/ngo/respond/${id}?status_val=${status}&response_msg=${encodeURIComponent(msg)}`, null, 'PUT');
+    loadProfile();
+  } catch(e) { alert(e.message); }
+}
+
+async function loadAllNGOs() {
+  show('list-loading'); hide('ngo-grid');
+  try {
+    const d = await api('/ngo/list', null, 'GET');
+    const grid = document.getElementById('ngo-grid');
+    grid.innerHTML = (d.ngos||[]).map(n=>`
+      <div class="ngo-card">
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;margin-bottom:4px">${n.org_name}</div>
+        <div style="font-size:12px;color:var(--green);margin-bottom:8px">${n.org_type}</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:4px">📍 ${n.city}, ${n.state}</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">📞 ${n.phone}</div>
+        ${n.description?`<div style="font-size:12px;color:var(--muted);margin-bottom:8px;line-height:1.5">${n.description.slice(0,90)}${n.description.length>90?'...':''}</div>`:''}
+        <div style="font-size:11px;color:var(--muted2)">${n.resource_count||0} resources listed</div>
+      </div>`).join('');
+    hide('list-loading');
+    grid.classList.remove('hidden');
+    grid.style.display = 'grid';
+  } catch(e) { hide('list-loading'); alert(e.message); }
+}
+</script>
+</body>
+</html>

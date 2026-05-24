@@ -1,0 +1,27 @@
+# GeoGuard AI — Render Deployment Guide
+# File: backend/render.yaml
+
+# Render pe deploy karne ke baad:
+# - Backend 24/7 chalta rehga — tumhe manually kuch nahi karna
+# - Users directly URL use karenge
+# - Free tier mein 750 hours/month free hain
+
+services:
+  - type: web
+    name: geoguard-ai-backend
+    env: python
+    region: singapore    # India ke sabse paas
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: MONGODB_URL
+        sync: false      # Render dashboard mein manually set karo
+      - key: SECRET_KEY
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: FAST2SMS_KEY
+        sync: false
