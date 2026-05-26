@@ -1297,3 +1297,8 @@ def test_email(to_email: str, user=Depends(current_user)):
 @app.get("/", tags=["System"])
 def root():
     return {"app":"GeoGuard AI v2","docs":"/docs","health":"/health"}
+
+
+@app.get("/health")
+def health():
+    return {"status": "running"}
