@@ -5,7 +5,18 @@
 <title>Risk Map — GeoGuard AI</title>
 <link rel="stylesheet" href="shared.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="assets/css/shared.css">
+<script src="assets/js/shared.js"></script>
+<script src="assets/js/theme.js"></script>
 <style>
+  @media(max-width:600px){
+  #map { height: 320px }
+  .map-stats-row { grid-template-columns: 1fr 1fr 1fr }
+  .legend { gap: 10px }
+  .leg-item { font-size: 11px }
+  .page { padding: 12px 12px 60px }
+  .topbar { padding: 0 14px }
+}
 #map{height:480px;border-radius:14px;border:1px solid var(--border)}
 .leaflet-popup-content-wrapper{background:#0a1410;border:1px solid #162b1e;color:#e8f5ee;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.5)}
 .leaflet-popup-tip{background:#0a1410}
@@ -32,7 +43,7 @@ body.light table th { border-color: #d1fae5; }
 body.light table td { border-color: rgba(0,0,0,.06); }
 
 </style>
-<script src="theme.js"></script>
+<script src="assets/js/theme.js"></script>
 </head>
 <body>
 <div class="app">
@@ -102,7 +113,7 @@ body.light table td { border-color: rgba(0,0,0,.06); }
 </div>
 </div>
 
-<script src="shared.js"></script>
+<script src="assets/js/shared.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 if (!pageInit('nav-map')) {}

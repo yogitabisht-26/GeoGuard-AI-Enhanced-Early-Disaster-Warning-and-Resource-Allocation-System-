@@ -4,7 +4,23 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>My Profile — GeoGuard AI</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/shared.css">
+<script src="assets/js/shared.js"></script>
+<script src="assets/js/theme.js"></script>
 <style>
+  @media(max-width:600px){
+  .frow { grid-template-columns: 1fr }
+  .hero { flex-direction: column; align-items: flex-start; gap: 12px }
+  .igrid { grid-template-columns: 1fr 1fr }
+  .tabs { flex-wrap: wrap }
+  .tbtn { font-size: 11px; padding: 6px 10px }
+  .lgrid { grid-template-columns: 1fr }
+  .page { padding: 12px 12px 60px }
+  .htable { font-size: 11px }
+  .htable th, .htable td { padding: 8px 8px }
+  .av-big { width: 56px; height: 56px; font-size: 22px }
+  .pname { font-size: 18px }
+}
 :root{--bg:#050a08;--card:#0a1410;--border:#162b1e;--border2:#1e3d2a;--text:#e8f5ee;--muted:#5a8068;--muted2:#3d5c4a;--green:#4ade80;--red:#f87171;--orange:#fb923c;--yellow:#fbbf24;--blue:#60a5fa;--sidebar:240px}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex}
@@ -130,7 +146,7 @@ body.light table th { border-color: #d1fae5; }
 body.light table td { border-color: rgba(0,0,0,.06); }
 
 </style>
-<script src="theme.js"></script>
+<script src="assets/js/theme.js"></script>
 </head>
 <body>
 <nav class="sidebar" id="sidebar">

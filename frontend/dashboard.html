@@ -6,9 +6,27 @@
 <title>Dashboard — GeoGuard AI</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="theme.js"></script>
+<link rel="stylesheet" href="assets/css/shared.css">
+<script src="assets/js/shared.js"></script>
+<script src="assets/js/theme.js"></script>
 <style>
 :root{--bg:#050a08;--card:#0a1410;--card2:#0f1c16;--border:#162b1e;--border2:#1e3d2a;--text:#e8f5ee;--muted:#5a8068;--muted2:#3d5c4a;--green:#4ade80;--red:#f87171;--orange:#fb923c;--yellow:#fbbf24;--blue:#60a5fa;--sidebar:240px}
+/* ── Mobile Responsive Dashboard ── */
+@media(max-width:600px){
+  .two-col { grid-template-columns: 1fr }
+  .month-grid { grid-template-columns: repeat(4,1fr) }
+  .dis-grid { grid-template-columns: 1fr }
+  .charts-grid { grid-template-columns: 1fr }
+  .wx-grid { grid-template-columns: repeat(3,1fr) }
+  .overall-box { flex-wrap: wrap; gap: 10px }
+  .res-loc { font-size: 16px }
+  .page { padding: 12px 12px 60px }
+  .form-card { padding: 16px }
+  .topbar { padding: 0 14px }
+  .tb-title { font-size: 13px }
+  .tb-clock { display: none }
+  #notif-panel { width: calc(100vw - 32px); right: 16px }
+}
 /* Light mode */
 body.light{--bg:#f0fdf4;--card:#ffffff;--card2:#f9fafb;--border:#d1fae5;--border2:#a7f3d0;--text:#064e3b;--muted:#4b7a5c;--muted2:#6b9e7d;--green:#16a34a;--red:#dc2626;--orange:#d97706;--yellow:#b45309;--blue:#1d4ed8}
 body.light .sidebar{background:#fff;box-shadow:2px 0 12px rgba(0,0,0,.08)}
@@ -292,8 +310,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 'use strict';
 
 // ── Config ────────────────────────────────────────
-var API = 'http://localhost:8000';
-
+var API = 'https://geoguard-ai-enhanced-early-disaster.onrender.com';
 // ── State ─────────────────────────────────────────
 var selMonth = new Date().getMonth() + 1;
 var selDis   = 'all';

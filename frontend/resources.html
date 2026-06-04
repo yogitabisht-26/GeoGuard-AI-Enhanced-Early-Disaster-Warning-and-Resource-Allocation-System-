@@ -3,8 +3,15 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Resource Requests — GeoGuard AI</title>
-<link rel="stylesheet" href="shared.css">
+<link rel="stylesheet" href="assets/css/shared.css">
+<script src="assets/js/shared.js"></script>
+<script src="assets/js/theme.js"></script>
 <style>
+  @media(max-width:600px){
+  .page > div[style*="grid"] { grid-template-columns: 1fr !important }
+  .form-row { grid-template-columns: 1fr }
+  .page { padding: 12px 12px 60px }
+}
 .req-status{display:inline-block;font-size:10px;font-weight:700;padding:2px 9px;border-radius:100px}
 .rs-pending{background:rgba(251,191,36,.15);color:#fbbf24}
 .rs-accepted{background:rgba(74,222,128,.15);color:#4ade80}
@@ -112,7 +119,7 @@
 </div>
 </div>
 
-<script src="shared.js"></script>
+<script src="assets/js/shared.js"></script>
 <script>
 if (!pageInit('nav-req')) {}
 else { startNearbyMonitor(); loadMyReqs(); }

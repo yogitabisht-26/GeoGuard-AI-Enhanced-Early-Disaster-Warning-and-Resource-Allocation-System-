@@ -3,8 +3,17 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>NGO Portal — GeoGuard AI</title>
-<link rel="stylesheet" href="shared.css">
+<link rel="stylesheet" href="assets/css/shared.css">
+<script src="assets/js/shared.js"></script>
+<script src="assets/js/theme.js"></script>
 <style>
+  @media(max-width:600px){
+  .tabs { flex-wrap: wrap }
+  .tab { font-size: 12px; padding: 7px 10px }
+  .ngo-grid { grid-template-columns: 1fr }
+  .form-row { grid-template-columns: 1fr }
+  .page { padding: 12px 12px 60px }
+}
 .tabs{display:flex;gap:4px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:4px;width:fit-content;margin-bottom:20px}
 .tab{background:none;border:none;padding:8px 16px;border-radius:9px;font-size:13px;cursor:pointer;color:var(--muted);transition:all .15s;font-family:'Inter',sans-serif}
 .tab.active{background:rgba(74,222,128,.12);color:var(--green);font-weight:600}
@@ -154,7 +163,7 @@
   </div>
 </div>
 </div>
-<script src="shared.js"></script>
+<script src="assets/js/shared.js"></script>
 <script>
 if (!pageInit('nav-ngo')) {}
 else startNearbyMonitor();

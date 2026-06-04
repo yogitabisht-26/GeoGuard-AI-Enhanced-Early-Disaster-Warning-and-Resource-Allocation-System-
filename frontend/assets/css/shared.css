@@ -1,5 +1,11 @@
 /* GeoGuard AI shared styles */
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap');
+@media(max-width:768px){
+  .sidebar { transform: translateX(-100%) }
+  .sidebar.open { transform: translateX(0) }
+  .main { margin-left: 0 }
+  .menu-btn { display: block }
+}
 :root{--bg:#050a08;--card:#0a1410;--card2:#0f1c16;--border:#162b1e;--border2:#1e3d2a;--text:#e8f5ee;--muted:#5a8068;--muted2:#3d5c4a;--green:#4ade80;--green2:#22c55e;--green3:#16a34a;--red:#f87171;--orange:#fb923c;--yellow:#fbbf24;--blue:#60a5fa;--sidebar:240px;--topbar:60px}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}

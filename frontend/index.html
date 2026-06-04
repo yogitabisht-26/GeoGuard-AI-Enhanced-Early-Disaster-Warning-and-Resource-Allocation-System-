@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>GeoGuard AI — Login</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/shared.css">
+<script src="assets/js/shared.js"></script>
+<script src="assets/js/theme.js"></script>
 <style>
 :root{
   --bg:#050a08;--card:#0a1410;--card2:#0f1c16;
@@ -13,6 +16,18 @@
   --green:#4ade80;--green2:#22c55e;--green3:#16a34a;
   --red:#f87171;--orange:#fb923c;--yellow:#fbbf24;
   --blue:#60a5fa;
+}
+/* ── Mobile Responsive ── */
+@media(max-width:480px){
+  .screen { padding: 10px }
+  .auth-card { padding: 24px 18px; border-radius: 16px }
+  .logo-text { font-size: 18px }
+  .form-row { grid-template-columns: 1fr }
+  .role-row { grid-template-columns: 1fr 1fr }
+  .otp-inp { width: 40px; height: 48px; font-size: 20px }
+  .otp-row { gap: 6px }
+  .screen-title { font-size: 18px }
+  .btn { padding: 12px }
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
@@ -160,7 +175,7 @@ body.light table th { border-color: #d1fae5; }
 body.light table td { border-color: rgba(0,0,0,.06); }
 
 </style>
-<script src="theme.js"></script>
+<script src="assets/js/theme.js"></script>
 </head>
 <body>
 <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle theme"
@@ -188,8 +203,13 @@ body.light table td { border-color: rgba(0,0,0,.06); }
     </div>
     <div class="form-group">
       <label class="form-label">Password</label>
-      <input class="form-input" id="l-pass" type="password" placeholder="Your password"
-             onkeydown="if(event.key==='Enter')doLogin()">
+      <div style="position:relative">
+  <input class="form-input" id="l-pass" type="password" placeholder="Your password"
+         onkeydown="if(event.key==='Enter')doLogin()" style="padding-right:44px">
+  <button type="button" onclick="togglePass('l-pass','eye-1')"
+    style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;padding:0;line-height:1"
+    id="eye-1">👁</button>
+</div>
     </div>
 
     <button class="btn" id="l-btn" onclick="doLogin()">
@@ -205,9 +225,7 @@ body.light table td { border-color: rgba(0,0,0,.06); }
       <a onclick="show('s-register')">Register as NGO / Organization?</a>
     </div>
 
-    <div class="dev-note">
-      Dev mode: OTP is printed in the backend terminal window.
-    </div>
+    
   </div>
 </div>
 
@@ -250,8 +268,12 @@ body.light table td { border-color: rgba(0,0,0,.06); }
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Password *</label>
-        <input class="form-input" id="r-pass" type="password" placeholder="Min 6 chars">
-      </div>
+<div style="position:relative">
+  <input class="form-input" id="r-pass" type="password" placeholder="Min 6 chars" style="padding-right:44px">
+  <button type="button" onclick="togglePass('r-pass','eye-2')"
+    style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;padding:0;line-height:1"
+    id="eye-2">👁</button>
+</div>      </div>
       <div class="form-group">
         <label class="form-label">Phone</label>
         <input class="form-input" id="r-phone" type="tel" placeholder="+91 XXXXXXXXXX">
