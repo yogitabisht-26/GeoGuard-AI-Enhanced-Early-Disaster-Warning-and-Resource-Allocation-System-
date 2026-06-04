@@ -89,7 +89,7 @@ print("[GeoGuard] MongoDB connected successfully")
 # ── Load ML Models ─────────────────────────────────
 MODELS = {}
 for name in ["landslide", "flood", "cyclone", "drought", "earthquake"]:
-    for path in [f"{name}_model.pkl", f"../models/{name}_model.pkl"]:
+    for path in [f"ml_models/{name}_model.pkl", f"{name}_model.pkl", f"../models/{name}_model.pkl"]:
         if os.path.exists(path):
             with open(path, "rb") as f:
                 MODELS[name] = pickle.load(f)
@@ -1297,3 +1297,8 @@ def test_email(to_email: str, user=Depends(current_user)):
 @app.get("/", tags=["System"])
 def root():
     return {"app":"GeoGuard AI v2","docs":"/docs","health":"/health"}
+
+
+@app.get("/health")
+def health():
+    return {"status": "running"}
